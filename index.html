@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>G7一次情報ダッシュボード</title>
+<style>
+  :root { --bg:#0f1729; --panel:#16223b; --line:#27406b; --txt:#e6ecf5; --muted:#9fb2cf; --accent:#4f8cff; --chip:#1f3864; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: "Segoe UI","Yu Gothic UI",Meiryo,sans-serif; background:var(--bg); color:var(--txt); }
+  header { padding:16px 20px; border-bottom:1px solid var(--line); display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; }
+  header h1 { font-size:20px; margin:0; }
+  #last-updated { color:var(--muted); font-size:13px; }
+  nav#tabs { display:flex; gap:4px; padding:8px 16px; border-bottom:1px solid var(--line); flex-wrap:wrap; }
+  nav#tabs button { background:transparent; color:var(--muted); border:1px solid transparent; padding:8px 14px; border-radius:8px 8px 0 0; cursor:pointer; font-size:14px; }
+  nav#tabs button.active { color:var(--txt); background:var(--panel); border-color:var(--line); }
+  main { padding:18px 20px; max-width:1100px; }
+  .view.hidden { display:none; }
+  .hidden { display:none; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:12px; }
+  .card h3 { margin:0 0 6px; font-size:16px; }
+  .meta-row { color:var(--muted); font-size:12px; margin-bottom:8px; }
+  .chip { display:inline-block; background:var(--chip); color:#cfe0ff; border-radius:999px; padding:2px 10px; font-size:12px; margin:2px 4px 2px 0; }
+  .kpi { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:16px; }
+  .kpi .box { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 16px; min-width:130px; }
+  .kpi .num { font-size:24px; font-weight:700; }
+  .kpi .lbl { color:var(--muted); font-size:12px; }
+  ul { margin:4px 0; padding-left:20px; }
+  button { background:var(--chip); color:var(--txt); border:1px solid var(--line); border-radius:6px; padding:6px 12px; cursor:pointer; font-size:13px; }
+  footer#disclaimer { margin-top:24px; padding:14px 20px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; }
+  a { color:var(--accent); }
+</style>
+</head>
+<body>
+<header>
+  <h1>G7一次情報ダッシュボード</h1>
+  <div id="last-updated"></div>
+</header>
+<nav id="tabs">
+  <button data-view="overview" class="active">概要</button>
+  <button data-view="meetings">会議・声明ログ</button>
+  <button data-view="calendar">イベントカレンダー</button>
+  <button data-view="analysis">考察ビュー</button>
+</nav>
+<main>
+  <section id="view-overview" class="view"></section>
+  <section id="view-meetings" class="view hidden"></section>
+  <section id="view-calendar" class="view hidden"></section>
+  <section id="view-analysis" class="view hidden"></section>
+</main>
+<footer id="disclaimer"></footer>
+
+<script src="data.js"></script>
+<script>
+const DATA = window.G7DATA || { meta:{}, meetings:[], calendar:[] };
+
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function byDateDesc(a,b){ return (b.date||"").localeCompare(a.date||""); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+
+function switchView(name){
+  document.querySelectorAll('nav#tabs button').forEach(b =>
+    b.classList.toggle('active', b.dataset.view === name));
+  ['overview','meetings','calendar','analysis'].forEach(v =>
+    document.getElementById('view-'+v).classList.toggle('hidden', v !== name));
+}
+
+function renderOverview(){
+  const el = document.getElementById('view-overview');
+  const meetings = (DATA.meetings||[]).slice().sort(byDateDesc);
+  const upcoming = (DATA.calendar||[]).filter(e => (e.date||"") >= todayStr())
+                    .sort((a,b)=> (a.date||"").localeCompare(b.date||""));
+  const latest = meetings.slice(0,3);
+  const tags = {};
+  meetings.forEach(m => (m.tags||[]).forEach(t => tags[t]=(tags[t]||0)+1));
+  const topTags = Object.entries(tags).sort((a,b)=>b[1]-a[1]).slice(0,8);
+
+  el.innerHTML = `
+    <div class="kpi">
+      <div class="box"><div class="num">${meetings.length}</div><div class="lbl">登録済み会議・声明</div></div>
+      <div class="box"><div class="num">${(DATA.calendar||[]).length}</div><div class="lbl">カレンダー登録イベント</div></div>
+      <div class="box"><div class="num">${upcoming.length}</div><div class="lbl">今後の予定</div></div>
+    </div>
+    <div class="card">
+      <h3>直近の予定イベント</h3>
+      ${upcoming.slice(0,5).map(e => `<div class="meta-row">${esc(e.date)} ・ <span class="chip">${esc(e.category)}</span> ${esc(e.name_ja)}</div>`).join('') || '<div class="meta-row">予定イベントはありません</div>'}
+    </div>
+    <div class="card">
+      <h3>最新の会議・声明</h3>
+      ${latest.map(m => `<div class="meta-row">${esc(m.date)} ・ <span class="chip">${esc(m.type)}</span> ${esc(m.title_ja)}</div>`).join('') || '<div class="meta-row">データがありません</div>'}
+    </div>
+    <div class="card">
+      <h3>注目タグ</h3>
+      ${topTags.map(([t,n]) => `<span class="chip">${esc(t)} (${n})</span>`).join('') || '<span class="meta-row">タグなし</span>'}
+    </div>`;
+}
+
+function meetingCard(m){
+  const a = m.analysis || {};
+  const points = (m.key_points_ja||[]).map(p => `<li>${esc(p)}</li>`).join('');
+  return `
+    <div class="card" data-type="${esc(m.type)}" data-tags="${esc((m.tags||[]).join(','))}" data-text="${esc((m.title_ja||'')+(m.summary_ja||''))}">
+      <h3>${esc(m.title_ja)}</h3>
+      <div class="meta-row">${esc(m.date)} ・ <span class="chip">${esc(m.type)}</span> ・ 議長国 ${esc(m.presidency)}</div>
+      <div><strong>要約:</strong> ${esc(m.summary_ja)}</div>
+      ${points ? `<div style="margin-top:6px"><strong>決定事項:</strong><ul>${points}</ul></div>` : ''}
+      <div style="margin-top:6px"><strong>考察</strong>
+        <ul>
+          <li><strong>為替・金利:</strong> ${esc(a.fx_rates)}</li>
+          <li><strong>商品・エネルギー・金:</strong> ${esc(a.commodities)}</li>
+          <li><strong>セクター:</strong> ${esc(a.sectors)}</li>
+          <li><strong>地政学:</strong> ${esc(a.geopolitics)}</li>
+        </ul>
+      </div>
+      ${m.market_direction ? `<div class="meta-row">方向性メモ: ${esc(m.market_direction)}</div>` : ''}
+      <div style="margin-top:6px">${(m.tags||[]).map(t=>`<span class="chip">${esc(t)}</span>`).join('')}</div>
+      <div style="margin-top:8px">
+        <button onclick="toggleOrig('${esc(m.id)}')">原文・全訳を表示/隠す</button>
+        ${m.source_url ? `　<a href="${esc(m.source_url)}" target="_blank" rel="noopener">原文リンク ↗</a>` : ''}
+      </div>
+      <div id="orig-${esc(m.id)}" class="hidden" style="margin-top:8px; border-top:1px dashed var(--line); padding-top:8px">
+        <div class="meta-row">原題: ${esc(m.title_orig)}（原語: ${esc(m.source_lang)}）</div>
+        <div><strong>主要部分の全訳:</strong><br>${esc(m.full_translation_ja).replace(/\n/g,'<br>')}</div>
+      </div>
+    </div>`;
+}
+
+function toggleOrig(id){
+  const el = document.getElementById('orig-'+id);
+  if (el) el.classList.toggle('hidden');
+}
+
+function renderMeetings(){
+  const el = document.getElementById('view-meetings');
+  const meetings = (DATA.meetings||[]).slice().sort(byDateDesc);
+  const types = [...new Set(meetings.map(m=>m.type).filter(Boolean))];
+  el.innerHTML = `
+    <div class="card">
+      <input id="m-search" type="text" placeholder="キーワード検索（邦題・要約）" style="padding:8px; width:60%; max-width:360px; background:var(--bg); color:var(--txt); border:1px solid var(--line); border-radius:6px;">
+      <select id="m-type" style="padding:8px; background:var(--bg); color:var(--txt); border:1px solid var(--line); border-radius:6px;">
+        <option value="">すべての種別</option>
+        ${types.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('')}
+      </select>
+    </div>
+    <div id="m-list">${meetings.map(meetingCard).join('')}</div>`;
+  const apply = () => {
+    const q = (document.getElementById('m-search').value||'').toLowerCase();
+    const t = document.getElementById('m-type').value;
+    document.querySelectorAll('#m-list .card').forEach(card => {
+      const okT = !t || card.dataset.type === t;
+      const okQ = !q || (card.dataset.text||'').toLowerCase().includes(q);
+      card.style.display = (okT && okQ) ? '' : 'none';
+    });
+  };
+  document.getElementById('m-search').addEventListener('input', apply);
+  document.getElementById('m-type').addEventListener('change', apply);
+}
+
+function renderCalendar(){
+  const el = document.getElementById('view-calendar');
+  const events = (DATA.calendar||[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  const cats = [...new Set(events.map(e=>e.category).filter(Boolean))];
+  // 月別グルーピング
+  const groups = {};
+  events.forEach(e => { const k=(e.date||'').slice(0,7); (groups[k]=groups[k]||[]).push(e); });
+  const today = todayStr();
+  const body = Object.keys(groups).sort().map(month => `
+    <div class="card">
+      <h3>${esc(month)}</h3>
+      ${groups[month].map(e => {
+        const past = (e.date||'') < today;
+        const color = e.status === '済' || past ? 'var(--muted)' : 'var(--accent)';
+        return `<div class="meta-row" data-cat="${esc(e.category)}">
+          <span style="color:${color}">●</span> ${esc(e.date)} ・
+          <span class="chip">${esc(e.category)}</span> ${esc(e.name_ja)}
+          <span style="color:var(--muted)">[${esc(e.status)}]</span>
+          ${e.note ? '・'+esc(e.note) : ''}
+        </div>`;
+      }).join('')}
+    </div>`).join('');
+  el.innerHTML = `
+    <div class="card">
+      <select id="c-cat" style="padding:8px; background:var(--bg); color:var(--txt); border:1px solid var(--line); border-radius:6px;">
+        <option value="">すべてのカテゴリ</option>
+        ${cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')}
+      </select>
+    </div>
+    <div id="c-list">${body || '<div class="card meta-row">イベントがありません</div>'}</div>`;
+  document.getElementById('c-cat').addEventListener('change', e => {
+    const c = e.target.value;
+    document.querySelectorAll('#c-list .meta-row[data-cat]').forEach(row => {
+      row.style.display = (!c || row.dataset.cat === c) ? '' : 'none';
+    });
+  });
+}
+
+const ASPECTS = [
+  ['fx_rates','為替・金利'],
+  ['commodities','商品・エネルギー・金'],
+  ['sectors','セクター'],
+  ['geopolitics','地政学'],
+];
+
+function renderAnalysis(){
+  const el = document.getElementById('view-analysis');
+  const meetings = (DATA.meetings||[]).slice().sort(byDateDesc);
+  el.innerHTML = ASPECTS.map(([key,label]) => `
+    <div class="card">
+      <h3>${esc(label)}</h3>
+      ${meetings.filter(m => (m.analysis||{})[key]).map(m => `
+        <div class="meta-row" style="margin-bottom:8px">
+          <strong>${esc(m.date)}</strong>（${esc(m.type)}・${esc(m.presidency)}）<br>
+          ${esc(m.analysis[key])}
+        </div>`).join('') || '<div class="meta-row">該当する考察がありません</div>'}
+    </div>`).join('');
+}
+
+function init(){
+  document.getElementById('last-updated').textContent =
+    '最終更新: ' + (DATA.meta && DATA.meta.last_updated ? DATA.meta.last_updated : '—');
+  document.getElementById('disclaimer').textContent =
+    (DATA.meta && DATA.meta.disclaimer) ? DATA.meta.disclaimer
+    : '本ツールの考察は参考情報であり、投資助言ではありません。';
+  document.querySelectorAll('nav#tabs button').forEach(b =>
+    b.addEventListener('click', () => switchView(b.dataset.view)));
+  renderOverview();
+  renderMeetings();
+  renderCalendar();
+  renderAnalysis();
+}
+init();
+</script>
+</body>
+</html>

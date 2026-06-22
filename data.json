@@ -1,0 +1,224 @@
+{
+  "meta": {
+    "last_updated": "2026-06-22",
+    "sources": [
+      { "name": "英国政府 (GOV.UK / HM Treasury)", "url": "https://www.gov.uk/government/news/g7-finance-ministers-agree-historic-global-tax-agreement", "lang": "en" },
+      { "name": "G7情報センター (トロント大学)", "url": "https://g7.utoronto.ca/summit/2022elmau/index.html", "lang": "en" },
+      { "name": "欧州理事会 (Consilium)", "url": "https://www.consilium.europa.eu/en/press/press-releases/2023/05/20/g7-hiroshima-leaders-communique/", "lang": "en" },
+      { "name": "G7イタリア議長国 (governo.it)", "url": "https://www.g7italy.it/en/g7-leaders-statement-on-extraordinary-revenue-acceleration-era-loans/", "lang": "en" },
+      { "name": "カナダ財務省 (Canada.ca)", "url": "https://www.canada.ca/en/department-finance/news/2025/05/g7-finance-ministers-and-central-bank-governors-communique.html", "lang": "en" },
+      { "name": "カナダ首相府 (pm.gc.ca)", "url": "https://www.pm.gc.ca/en/news/statements/2025/06/17/g7-chairs-summary", "lang": "en" },
+      { "name": "フランス大統領府 (Élysée)", "url": "https://www.elysee.fr/en/G7evian", "lang": "en" },
+      { "name": "米国連邦準備制度 (FRB)", "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm", "lang": "en" },
+      { "name": "日本銀行 (Bank of Japan)", "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm", "lang": "en" }
+    ],
+    "disclaimer": "本ツールの考察は一次情報をもとにした参考情報であり、投資助言・売買推奨ではありません。最終的な投資判断はご自身の責任で行ってください。"
+  },
+  "meetings": [
+    {
+      "id": "2021-06-london-fmcbg",
+      "date": "2021-06-05",
+      "type": "財務相・中銀総裁会議",
+      "presidency": "英国",
+      "title_orig": "G7 Finance Ministers Agree Historic Global Tax Agreement",
+      "title_ja": "G7財務相会合 ── 歴史的な国際課税合意（最低法人税率15%）",
+      "source_url": "https://www.gov.uk/government/news/g7-finance-ministers-agree-historic-global-tax-agreement",
+      "source_lang": "en",
+      "summary_ja": "ロンドンでのG7財務相会合で、多国籍企業に対し『事業を行う国での課税（第1の柱）』と『各国で最低15%の法人税（第2の柱）』に原則合意。企業の気候関連影響の開示義務化も支持した。後にOECD/G20での国際合意へ発展する起点となった。",
+      "key_points_ja": [
+        "多国籍企業は本社所在地ではなく売上のある国でも課税する（利益再配分＝第1の柱）",
+        "各国ベースで少なくとも15%の最低法人税率に合意（第2の柱）",
+        "詳細は7月のG20財務相・中銀総裁会合でさらに議論",
+        "企業に対し投資判断の気候影響の開示を義務化する方向を支持"
+      ],
+      "full_translation_ja": "財務相らは、多国籍企業が本社や子会社の所在地ではなく、製品やサービスを販売する国で納税する改革に合意し、各国で少なくとも15%の税を支払う世界最低税率の原則に合意した。",
+      "analysis": {
+        "fx_rates": "直接の為替影響は限定的。ただし多国間協調の復活はリスク選好を下支えし、安全通貨（円・スイスフラン）には中立〜やや逆風。",
+        "commodities": "商品市場への直接の影響は乏しい。",
+        "sectors": "低い実効税率を享受してきた大型ハイテク・多国籍企業（プラットフォーマー等）には中長期の増税リスク。税制裁定に依存しない内需・銀行・公益株には相対的に中立。",
+        "geopolitics": "多国間主義の復権を象徴。デジタル課税を巡る米欧摩擦の緩和材料。"
+      },
+      "market_direction": "大型ハイテクに長期の実効税率上昇リスク／協調ムードでリスクオン寄り",
+      "tags": ["国際課税", "最低法人税", "デジタル課税", "多国間協調"]
+    },
+    {
+      "id": "2022-06-elmau-summit",
+      "date": "2022-06-28",
+      "type": "首脳会議",
+      "presidency": "ドイツ",
+      "title_orig": "G7 Leaders' Communiqué (Schloss Elmau)",
+      "title_ja": "G7首脳コミュニケ（エルマウ）── ロシア産石油の価格上限を検討",
+      "source_url": "https://g7.utoronto.ca/summit/2022elmau/index.html",
+      "source_lang": "en",
+      "summary_ja": "ロシアの戦費を断つため、ロシア産石油などへの一時的な輸入価格上限（プライスキャップ）導入の実現可能性を検討することで一致。金融・保険・海運を価格上限に紐づける仕組みを想定。国際的な『気候クラブ』創設にも合意した。",
+      "key_points_ja": [
+        "ロシアが侵略戦争から利益を得るのを防ぐ追加措置を検討",
+        "ロシア産石油への一時的な輸入価格上限（プライスキャップ）の実現可能性を精査",
+        "保険・金融・海運サービスを価格上限の遵守に紐づける枠組み",
+        "国際的な『気候クラブ』を創設し産業の脱炭素で協力"
+      ],
+      "full_translation_ja": "我々は、ロシアがその侵略戦争から利益を得ることを防ぐためのさらなる措置を検討する。これには、適切な場合に一時的な輸入価格上限を導入する実現可能性が含まれる。",
+      "analysis": {
+        "fx_rates": "エネルギー由来インフレの抑制を狙う措置。中銀の利上げ観測と絡み、資源国通貨や円の方向性に影響しうる。",
+        "commodities": "原油市場の重要材料。実効性次第で原油は上下双方向のリスク。ロシア産の海上輸送・保険規制は供給フローを歪め、価格の不確実性を高める。",
+        "sectors": "石油メジャー・海運・損害保険（P&I保険）に直接的な影響。LNG・代替エネルギー・再エネには追い風。",
+        "geopolitics": "対ロシア経済圧力の本格化。インド・トルコなど大口買い手の協力が前提で、実効性には不確実性が残る。"
+      },
+      "market_direction": "原油ボラ拡大／エネルギー・海運・損保・LNGにテーマ",
+      "tags": ["ロシア産石油", "プライスキャップ", "エネルギー制裁", "気候クラブ"]
+    },
+    {
+      "id": "2023-05-hiroshima-summit",
+      "date": "2023-05-20",
+      "type": "首脳会議",
+      "presidency": "日本",
+      "title_orig": "G7 Hiroshima Leaders' Communiqué",
+      "title_ja": "G7広島首脳コミュニケ ── デリスキング（脱リスク）と経済安全保障",
+      "source_url": "https://www.consilium.europa.eu/en/press/press-releases/2023/05/20/g7-hiroshima-leaders-communique/",
+      "source_lang": "en",
+      "summary_ja": "対中関係を『デカップリング（分断）ではなくデリスキング（脱リスク）』と定義。重要鉱物・半導体・電池のサプライチェーン強靱化、経済的威圧への対抗枠組み（調整プラットフォーム）創設で一致した。",
+      "key_points_ja": [
+        "『デカップリング（分断）ではなくデリスキング（脱リスク）』を明記",
+        "G7の政策は中国を害し分断するものではないと明言しつつ供給網の多様化を進める",
+        "重要鉱物・半導体・電池を重点サプライチェーンに指定",
+        "経済的威圧に対抗する調整プラットフォームを立ち上げ",
+        "機微技術の対外投資（アウトバウンド投資）規制の重要性に言及"
+      ],
+      "full_translation_ja": "我々は、多様化とパートナーシップの深化、そしてデリスキングに基づき、経済的強靱性と経済安全保障へのアプローチを協調させる。これはデカップリング（分断）ではない。",
+      "analysis": {
+        "fx_rates": "直接の為替言及は限定的。ただし対中デリスキングは中長期の資本フロー再配置を通じ通貨に影響しうる。",
+        "commodities": "重要鉱物の確保強化は、レアアース・リチウム・コバルト等の関連資源にとって構造的な支援要因。",
+        "sectors": "半導体・電池・重要鉱物・防衛にプラス。対中売上比率の高い企業には規制・報復リスク。",
+        "geopolitics": "対中スタンスの基調（デリスキング）を確立。経済的威圧への集団対応で摩擦が制度化へ。"
+      },
+      "market_direction": "半導体・重要鉱物・電池・防衛にテーマ／対中依存業種に規制リスク",
+      "tags": ["デリスキング", "経済安全保障", "半導体", "重要鉱物", "経済的威圧"]
+    },
+    {
+      "id": "2024-06-apulia-era-loans",
+      "date": "2024-06-13",
+      "type": "首脳会議（声明）",
+      "presidency": "イタリア",
+      "title_orig": "G7 Leaders' Statement on Extraordinary Revenue Acceleration (ERA) Loans",
+      "title_ja": "G7首脳声明 ── 凍結ロシア資産の利益を担保にウクライナへ約500億ドル融資（ERA）",
+      "source_url": "https://www.g7italy.it/en/g7-leaders-statement-on-extraordinary-revenue-acceleration-era-loans/",
+      "source_lang": "en",
+      "summary_ja": "プーリア（ボルゴ・エニャツィア）サミットで、凍結したロシア国家資産から生じる将来の運用益を原資に、ウクライナへ約500億ドルの融資を年内に供与することで合意。10月25日に枠組みを最終化し、米財務省が200億ドルを拠出した。",
+      "key_points_ja": [
+        "凍結ロシア資産の運用益を担保に約500億ドルをウクライナへ融資",
+        "2024年末までの資金供与開始を目指す",
+        "10月25日に枠組みを最終合意、米国が200億ドルを拠出"
+      ],
+      "full_translation_ja": "G7首脳は、凍結されたロシアの国家資産から生じる将来の臨時収益（windfall proceeds）を活用し、2024年末までにウクライナへ約500億ドルを供与するための融資を提供することで合意した。",
+      "analysis": {
+        "fx_rates": "凍結資産の収益活用は、準備通貨としてのユーロ・ドルへの信認や新興国の『脱ドル』議論に長期的な論点を残す。",
+        "commodities": "直接の影響は限定的。対ロ圧力の継続はエネルギー地政学プレミアムを下支え。",
+        "sectors": "ウクライナ支援継続は防衛・復興関連にプラス。ロシア資産を多く保管する欧州金融（ユーロクリア等）には法的・係争リスク。",
+        "geopolitics": "凍結資産の本格活用に踏み込む転換点。ロシアの対抗措置や法的応酬のリスクが残る。"
+      },
+      "market_direction": "防衛・復興にテーマ／準備通貨の信認は長期論点",
+      "tags": ["凍結資産", "ERA", "ウクライナ支援", "対ロシア制裁"]
+    },
+    {
+      "id": "2025-05-banff-fmcbg",
+      "date": "2025-05-22",
+      "type": "財務相・中銀総裁会議",
+      "presidency": "カナダ",
+      "title_orig": "G7 Finance Ministers and Central Bank Governors' Communiqué (Banff)",
+      "title_ja": "G7財務相・中央銀行総裁コミュニケ（バンフ）",
+      "source_url": "https://www.canada.ca/en/department-finance/news/2025/05/g7-finance-ministers-and-central-bank-governors-communique.html",
+      "source_lang": "en",
+      "summary_ja": "2017年5月の為替コミットメントを再確認。ロシア国家資産は侵略終結・損害賠償まで凍結を維持。ウクライナ復興費を世界銀行が5,240億ドルと試算し民間資金動員を重視。非市場的政策と経済安全保障、暗号資産の窃取（北朝鮮を含む）への深刻な懸念を表明した。",
+      "key_points_ja": [
+        "2017年5月の為替レートに関するコミットメントを再確認",
+        "ロシアの国家資産は侵略終結・損害賠償まで凍結を維持",
+        "ウクライナ復興費を世銀が5,240億ドルと試算、民間資金動員を重視",
+        "非市場的な政策・慣行が不均衡と経済安全保障に与える影響への共通理解の必要性",
+        "暗号資産の窃取・詐欺（北朝鮮を含む）が前例のない水準に達したと深刻な懸念"
+      ],
+      "full_translation_ja": "我々は2017年5月の為替レートに関するコミットメントを再確認する。…… 我々の管轄内にあるロシアの国家資産は、ロシアが侵略を終わらせ損害を賠償するまで、凍結されたままとする。",
+      "analysis": {
+        "fx_rates": "『2017年5月コミットメント』の再確認は、為替の過度な変動・無秩序な動きへの牽制を維持する含意。急激な円安局面での口先介入・協調の余地を残し、ドル円の一方向的な上昇には警戒材料となりうる。",
+        "commodities": "対ロ資産凍結の継続はエネルギー地政学の不確実性を温存。直接の商品言及は限定的。",
+        "sectors": "暗号資産窃取への警戒強化は暗号資産・取引所関連にコンプライアンス負担。非市場的政策への対抗姿勢は国内製造業の保護的論点。",
+        "geopolitics": "対ロシア結束を維持しつつ、非市場的政策（中国を念頭）への共通対処を志向。"
+      },
+      "market_direction": "ドル円の急騰には牽制余地／暗号資産に規制圧力",
+      "tags": ["為替", "2017年コミットメント", "凍結資産", "非市場的政策", "暗号資産", "北朝鮮"]
+    },
+    {
+      "id": "2025-06-kananaskis-summit",
+      "date": "2025-06-17",
+      "type": "首脳会議",
+      "presidency": "カナダ",
+      "title_orig": "G7 Chair's Summary (Kananaskis)",
+      "title_ja": "G7議長総括（カナナスキス）── 重要鉱物生産同盟を新設",
+      "source_url": "https://www.pm.gc.ca/en/news/statements/2025/06/17/g7-chairs-summary",
+      "source_lang": "en",
+      "summary_ja": "市場のボラティリティ上昇と国際貿易へのショック、分断・世界的不均衡を背景に、経済・金融の安定と開かれた予見可能な貿易体制を議論。カナダ主導の『重要鉱物生産同盟』を歓迎。ウクライナの無条件停戦を支持し、金融制裁を含むあらゆる選択肢で対ロ圧力を最大化することで一致した。",
+      "key_points_ja": [
+        "重要鉱物の供給確保へ『重要鉱物生産同盟（Critical Minerals Production Alliance）』を新設",
+        "エネルギー安全保障・インフラ・投資動員を重視",
+        "ウクライナの無条件停戦にコミットし、ロシアにも同様を要求",
+        "金融制裁を含むあらゆる選択肢で対ロシア圧力を最大化"
+      ],
+      "full_translation_ja": "市場のボラティリティの高まりと国際貿易へのショック、ならびに分断と世界的不均衡という長期的傾向の中で、首脳は、より大きな経済・金融の安定、技術革新、そして投資と成長を促す開かれた予見可能な貿易体制の必要性について議論した。",
+      "analysis": {
+        "fx_rates": "『市場のボラティリティ上昇』『世界的不均衡』への言及は、通商摩擦・関税を背景にした為替変動への警戒を映す。リスク回避局面では円高圧力の論点。",
+        "commodities": "重要鉱物生産同盟はレアアース・銅・リチウム等の供給確保を制度化し、関連資源の構造的な支援要因。エネルギー安全保障重視も資源に追い風。",
+        "sectors": "重要鉱物・鉱業・防衛・インフラにプラス。半導体など先端製造の供給網にも波及。",
+        "geopolitics": "対ロ圧力の継続と、通商分断への危機感が前面に。停戦交渉の支持で和平シナリオも視野に入る。"
+      },
+      "market_direction": "重要鉱物・資源・防衛にテーマ／通商分断で為替ボラ警戒",
+      "tags": ["重要鉱物", "重要鉱物生産同盟", "エネルギー安全保障", "ウクライナ", "対ロシア制裁"]
+    },
+    {
+      "id": "2026-06-evian-summit",
+      "date": "2026-06-17",
+      "type": "首脳会議",
+      "presidency": "フランス",
+      "title_orig": "G7 Leaders' Joint Statements (Evian)",
+      "title_ja": "G7首脳共同声明（エビアン）── 9つの宣言を採択",
+      "source_url": "https://www.consilium.europa.eu/en/press/press-releases/2026/06/17/g7-leaders-joint-statements-evian-france-16-17-june-2026/",
+      "source_lang": "en",
+      "summary_ja": "計9つの宣言を採択。ロシアの石油・ガス部門を含む制裁強化で対ロ圧力を増大。重要鉱物の依存低減で協力。世界的不均衡の是正へ経済政策を協調し、IMFが監視で中心的役割。AIの子ども保護、エボラ対応に10億ドル超、難治性・小児がんで協力を打ち出した。",
+      "key_points_ja": [
+        "ウクライナ支援で結束を再確認し、ロシアの石油・ガス部門を含む制裁を強化",
+        "重要鉱物の依存低減（デリスキング）で協力を継続",
+        "世界的不均衡是正へ経済政策を協調。公正な競争・産業/雇用の保護・貿易戦争回避を掲げ、IMFが監視で中心的役割",
+        "AIチャットボットの対子ども言語の適正化など若年層保護、安全なAI展開で大手企業と連携",
+        "エボラ対応に10億ドル超を拠出、難治性・小児がんで情報共有と協力"
+      ],
+      "full_translation_ja": "首脳は、これらの不均衡を可能な限り効果的に是正するために経済政策を協力・協調させ、同時に公正な競争を確保し、産業と雇用を守り、将来の貿易戦争と金融危機を回避する必要性を認識した。…… ロシアの戦争遂行への圧力を、ロシア産の石油・ガスを含む制裁を通じて強める。",
+      "analysis": {
+        "fx_rates": "『世界的不均衡』是正と政策協調・IMF監視の明記は、為替を含むマクロ不均衡への国際的関与を強める。『貿易戦争回避』の意図は通商起因の為替急変リスクをやや緩和する方向。",
+        "commodities": "ロシア産石油・ガス制裁の強化は供給プレミアム要因。重要鉱物の依存低減協力は関連資源の構造的支援を継続。",
+        "sectors": "エネルギー（LNG・代替）、重要鉱物・鉱業、防衛にプラス。AI関連は安全規制の負担と需要拡大の両面。医療（がん・感染症）関連に資金フロー。",
+        "geopolitics": "対ロ圧力をエネルギーに照準。通商では『貿易戦争回避』を掲げ協調を志向する。"
+      },
+      "market_direction": "エネルギー・重要鉱物・防衛にテーマ／不均衡是正でドル偏重に長期論点",
+      "tags": ["制裁強化", "ロシア石油ガス", "重要鉱物", "世界的不均衡", "IMF", "AI"]
+    }
+  ],
+  "calendar": [
+    { "date": "2021-06-05", "name_ja": "G7財務相・中銀総裁会議（ロンドン）", "category": "G7財務", "status": "済", "related_meeting_id": "2021-06-london-fmcbg", "note": "英国議長。最低法人税率15%で合意" },
+    { "date": "2021-06-11", "name_ja": "G7コーンウォール首脳会議（英国）", "category": "G7首脳", "status": "済", "related_meeting_id": null, "note": "英国議長（6/11-13）" },
+    { "date": "2022-06-26", "name_ja": "G7エルマウ首脳会議（ドイツ）", "category": "G7首脳", "status": "済", "related_meeting_id": "2022-06-elmau-summit", "note": "ドイツ議長（6/26-28）。ロシア産石油の価格上限を検討" },
+    { "date": "2023-05-19", "name_ja": "G7広島首脳会議（日本）", "category": "G7首脳", "status": "済", "related_meeting_id": "2023-05-hiroshima-summit", "note": "日本議長（5/19-21）。デリスキングを明記" },
+    { "date": "2024-06-13", "name_ja": "G7プーリア首脳会議（イタリア）", "category": "G7首脳", "status": "済", "related_meeting_id": "2024-06-apulia-era-loans", "note": "イタリア議長（6/13-15）。凍結資産でウクライナ500億ドル融資" },
+    { "date": "2025-05-20", "name_ja": "G7財務相・中銀総裁会議（バンフ・カナダ）", "category": "G7財務", "status": "済", "related_meeting_id": "2025-05-banff-fmcbg", "note": "カナダ議長（5/20-22）" },
+    { "date": "2025-06-15", "name_ja": "G7カナナスキス首脳会議（カナダ）", "category": "G7首脳", "status": "済", "related_meeting_id": "2025-06-kananaskis-summit", "note": "カナダ議長（6/15-17）。重要鉱物生産同盟を新設" },
+    { "date": "2026-06-15", "name_ja": "G7エビアン首脳会議（フランス）", "category": "G7首脳", "status": "済", "related_meeting_id": "2026-06-evian-summit", "note": "フランス議長（6/15-17）。9宣言を採択" },
+    { "date": "2026-01-27", "name_ja": "FOMC（米連邦公開市場委員会）", "category": "FOMC", "status": "済", "related_meeting_id": null, "note": "1/27-28" },
+    { "date": "2026-03-17", "name_ja": "FOMC（経済見通し・ドット公表）", "category": "FOMC", "status": "済", "related_meeting_id": null, "note": "3/17-18" },
+    { "date": "2026-04-28", "name_ja": "FOMC（米連邦公開市場委員会）", "category": "FOMC", "status": "済", "related_meeting_id": null, "note": "4/28-29" },
+    { "date": "2026-06-16", "name_ja": "FOMC（経済見通し・ドット公表）", "category": "FOMC", "status": "済", "related_meeting_id": null, "note": "6/16-17" },
+    { "date": "2026-07-28", "name_ja": "FOMC（米連邦公開市場委員会）", "category": "FOMC", "status": "予定", "related_meeting_id": null, "note": "7/28-29" },
+    { "date": "2026-09-15", "name_ja": "FOMC（経済見通し・ドット公表）", "category": "FOMC", "status": "予定", "related_meeting_id": null, "note": "9/15-16" },
+    { "date": "2026-10-27", "name_ja": "FOMC（米連邦公開市場委員会）", "category": "FOMC", "status": "予定", "related_meeting_id": null, "note": "10/27-28" },
+    { "date": "2026-12-08", "name_ja": "FOMC（経済見通し・ドット公表）", "category": "FOMC", "status": "予定", "related_meeting_id": null, "note": "12/8-9" },
+    { "date": "2026-01-22", "name_ja": "日銀 金融政策決定会合", "category": "日銀", "status": "済", "related_meeting_id": null, "note": "1/22-23" },
+    { "date": "2026-04-27", "name_ja": "日銀 金融政策決定会合（展望レポート）", "category": "日銀", "status": "済", "related_meeting_id": null, "note": "4/27-28" },
+    { "date": "2026-07-30", "name_ja": "日銀 金融政策決定会合（展望レポート）", "category": "日銀", "status": "予定", "related_meeting_id": null, "note": "7/30-31" }
+  ]
+}
