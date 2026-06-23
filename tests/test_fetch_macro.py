@@ -107,3 +107,31 @@ def test_fetch_ecb_series_builds_url_and_parses():
     assert "data-api.ecb.europa.eu/service/data/BSI/M.U2.Y.V.M20.X.1.U2.2300.Z01.E" in captured["url"]
     assert "format=csvdata" in captured["url"]
     assert rows == [("2026-02-01", 16244868.0), ("2026-03-01", 16282398.0)]
+
+
+def test_get_rows_dispatches_by_source():
+    fred_calls, ecb_calls = [], []
+    def fake_fred(sid, key):
+        fred_calls.append(sid)
+        return {"observations": [{"date": "2020-01-01", "value": "1"}]}
+    def fake_ecb(key):
+        ecb_calls.append(key)
+        return [("2026-04-01", 16289850.0)]
+    r_fred = fetch_macro.get_rows({"id": "M2SL"}, "key",
+                                  fred_fetcher=fake_fred, ecb_fetcher=fake_ecb)
+    r_ecb = fetch_macro.get_rows({"id": "X", "source": "ecb", "ecb_key": "BSI/KEY"}, "key",
+                                 fred_fetcher=fake_fred, ecb_fetcher=fake_ecb)
+    assert fred_calls == ["M2SL"] and r_fred == [("2020-01-01", 1.0)]
+    assert ecb_calls == ["BSI/KEY"] and r_ecb == [("2026-04-01", 16289850.0)]
+
+
+def test_run_handles_ecb_source(tmp_path):
+    cfg = {"series": [{"id": "ECB_M2_EUR", "source": "ecb",
+                       "ecb_key": "BSI/KEY", "transform": "yoy_pct_also"}]}
+    def fake_ecb(key):
+        return [("2025-04-01", 100.0), ("2026-04-01", 110.0)]
+    res = fetch_macro.run(cfg, "key", ecb_fetcher=fake_ecb, data_dir=tmp_path)
+    assert res["ok"] == ["ECB_M2_EUR"]
+    txt = (tmp_path / "ECB_M2_EUR.csv").read_text(encoding="utf-8")
+    assert txt.startswith("date,value,yoy_pct")
+    assert "10.0" in txt  # YoY +10%

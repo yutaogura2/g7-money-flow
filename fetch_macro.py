@@ -127,13 +127,21 @@ def fetch_ecb_series(ecb_key: str, urlopen=urllib.request.urlopen) -> list:
     return _parse_ecb_csv(text)
 
 
-def run(config: dict, api_key: str, fetcher=fetch_series, data_dir: Path = MACRO_DIR) -> dict:
+def get_rows(series: dict, api_key: str, *, fred_fetcher, ecb_fetcher) -> list:
+    if series.get("source") == "ecb":
+        return ecb_fetcher(series["ecb_key"])
+    return parse_observations(fred_fetcher(series["id"], api_key))
+
+
+def run(config: dict, api_key: str, fetcher=fetch_series, ecb_fetcher=None, data_dir: Path = MACRO_DIR) -> dict:
+    if ecb_fetcher is None:
+        ecb_fetcher = fetch_ecb_series
     ok, failed = [], []
     for s in config.get("series", []):
         sid = s["id"]
         with_yoy = s.get("transform") == "yoy_pct_also"
         try:
-            rows = parse_observations(fetcher(sid, api_key))
+            rows = get_rows(s, api_key, fred_fetcher=fetcher, ecb_fetcher=ecb_fetcher)
             if not rows:
                 failed.append((sid, "観測値なし"))
                 continue
