@@ -251,8 +251,7 @@ function fmtYoy(y){ return (y==null) ? '—' : (y>0?'+':'') + y + '%'; }
 
 function macroCard(s){
   return `<div class="card" data-ind="${esc(s.indicator)}" style="margin:0">
-    <div class="meta-row" style="margin:0">${esc(s.country)}</div>
-    <h3 style="margin:2px 0">${esc(s.indicator)}</h3>
+    <h3 style="margin:0 0 2px">${esc(s.country)}</h3>
     <div><span style="font-size:20px;font-weight:700">${esc(s.latest)}</span> <span class="meta-row" style="display:inline">${esc(s.unit)}</span></div>
     <div class="meta-row">最新 ${esc(s.latest_date)}　前年比 ${esc(fmtYoy(s.yoy))}</div>
     ${lineChartSVG([{points:s.history}])}
@@ -267,20 +266,25 @@ function renderMacro(){
     return;
   }
   const inds = [...new Set(macro.map(s => s.indicator))];
+  const sections = inds.map(ind => `
+    <div class="macro-section" data-ind="${esc(ind)}">
+      <h3 style="margin:16px 0 8px; border-bottom:1px solid var(--line); padding-bottom:4px">${esc(ind)}</h3>
+      <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px">
+        ${macro.filter(s => s.indicator === ind).map(macroCard).join('')}
+      </div>
+    </div>`).join('');
   el.innerHTML = `
     <div class="card">
       <select id="macro-ind" style="padding:8px; background:var(--bg); color:var(--txt); border:1px solid var(--line); border-radius:6px;">
-        <option value="">すべての指標</option>
+        <option value="">すべてのカテゴリ</option>
         ${inds.map(i => `<option>${esc(i)}</option>`).join('')}
       </select>
     </div>
-    <div id="macro-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px">
-      ${macro.map(macroCard).join('')}
-    </div>`;
+    ${sections}`;
   document.getElementById('macro-ind').addEventListener('change', e => {
     const v = e.target.value;
-    document.querySelectorAll('#macro-grid .card').forEach(c =>
-      c.style.display = (!v || c.dataset.ind === v) ? '' : 'none');
+    document.querySelectorAll('.macro-section').forEach(sec =>
+      sec.style.display = (!v || sec.dataset.ind === v) ? '' : 'none');
   });
 }
 
