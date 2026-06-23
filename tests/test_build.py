@@ -72,3 +72,34 @@ def test_build_xlsx_source_hyperlink(tmp_path, sample_json):
     url_cell = ws.cell(row=2, column=len(build.MEETING_HEADERS))
     assert url_cell.hyperlink is not None
     assert url_cell.hyperlink.target == "https://example.com/a"
+
+
+def _write_macro_fixture(tmp_path):
+    (tmp_path / "macro_data").mkdir()
+    (tmp_path / "macro_data" / "M2SL.csv").write_text(
+        "date,value,yoy_pct\n2019-01-01,100.0,\n2020-01-01,110.0,10.0\n", encoding="utf-8")
+    (tmp_path / "series_config.json").write_text(
+        json.dumps({"history_start": "2000-01-01", "history_points": 180,
+                    "series": [{"id": "M2SL", "country": "米国",
+                                "indicator": "マネーサプライ(M2)", "unit": "10億ドル",
+                                "transform": "yoy_pct_also"}]}), encoding="utf-8")
+
+
+def test_build_macro_payload(tmp_path):
+    _write_macro_fixture(tmp_path)
+    payload = build.build_macro_payload(
+        config_path=tmp_path / "series_config.json", data_dir=tmp_path / "macro_data")
+    s = payload["series"][0]
+    assert s["country"] == "米国"
+    assert s["latest"] == 110.0
+    assert s["latest_date"] == "2020-01-01"
+    assert s["yoy"] == 10.0
+    assert s["history"] == [["2019-01-01", 100.0], ["2020-01-01", 110.0]]
+    assert s["history_yoy"] == [["2020-01-01", 10.0]]
+
+
+def test_macro_timeseries_rows(tmp_path):
+    _write_macro_fixture(tmp_path)
+    rows = build.macro_timeseries_rows(
+        config_path=tmp_path / "series_config.json", data_dir=tmp_path / "macro_data")
+    assert ("2020-01-01", "米国", "マネーサプライ(M2)", 110.0, 10.0) in rows
