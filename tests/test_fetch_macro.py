@@ -179,3 +179,14 @@ def test_fetch_boj_m2_decodes_cp932():
         return _R(sample.encode("cp932"))
     rows = fetch_macro.fetch_boj_m2(urlopen=fake_urlopen)
     assert rows == [("2026-05-01", 1298.0932)]
+
+
+def test_run_handles_boj_source(tmp_path):
+    cfg = {"series": [{"id": "JP_M2_BOJ", "source": "boj", "transform": "yoy_pct_also"}]}
+    def fake_boj():
+        return [("2025-05-01", 1266.0), ("2026-05-01", 1298.0932)]
+    res = fetch_macro.run(cfg, "key", boj_fetcher=fake_boj, data_dir=tmp_path)
+    assert res["ok"] == ["JP_M2_BOJ"]
+    txt = (tmp_path / "JP_M2_BOJ.csv").read_text(encoding="utf-8")
+    assert txt.startswith("date,value,yoy_pct")
+    assert "2026-05-01" in txt

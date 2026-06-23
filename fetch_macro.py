@@ -171,9 +171,11 @@ def get_rows(series: dict, api_key: str, *, fred_fetcher, ecb_fetcher, boj_fetch
     return parse_observations(fred_fetcher(series["id"], api_key))
 
 
-def run(config: dict, api_key: str, fetcher=fetch_series, ecb_fetcher=None, data_dir: Path = MACRO_DIR) -> dict:
+def run(config: dict, api_key: str, fetcher=fetch_series, ecb_fetcher=None, boj_fetcher=None, data_dir: Path = MACRO_DIR) -> dict:
     if ecb_fetcher is None:
         ecb_fetcher = fetch_ecb_series
+    if boj_fetcher is None:
+        boj_fetcher = fetch_boj_m2
     ok, failed, skipped = [], [], []
     for s in config.get("series", []):
         sid = s["id"]
@@ -182,7 +184,7 @@ def run(config: dict, api_key: str, fetcher=fetch_series, ecb_fetcher=None, data
             continue
         with_yoy = s.get("transform") == "yoy_pct_also"
         try:
-            rows = get_rows(s, api_key, fred_fetcher=fetcher, ecb_fetcher=ecb_fetcher)
+            rows = get_rows(s, api_key, fred_fetcher=fetcher, ecb_fetcher=ecb_fetcher, boj_fetcher=boj_fetcher)
             if not rows:
                 failed.append((sid, "観測値なし"))
                 continue
