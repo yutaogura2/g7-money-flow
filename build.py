@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """data.json から data.js（ブラウザ用）と Excel を生成する。"""
+import csv
 import json
 import sys
 from pathlib import Path
@@ -13,6 +14,8 @@ ROOT = Path(__file__).resolve().parent
 DATA_JSON = ROOT / "data.json"
 DATA_JS = ROOT / "data.js"
 XLSX = ROOT / "G7_一次情報ログ.xlsx"
+SERIES_CONFIG = ROOT / "series_config.json"
+MACRO_DIR = ROOT / "macro_data"
 
 
 def load_data(path: Path = DATA_JSON) -> dict:
@@ -23,6 +26,67 @@ def load_data(path: Path = DATA_JSON) -> dict:
 def write_data_js(data: dict, path: Path = DATA_JS) -> None:
     payload = json.dumps(data, ensure_ascii=False, indent=2)
     Path(path).write_text(f"window.G7DATA = {payload};\n", encoding="utf-8")
+
+
+def _read_series_csv(path: Path) -> list:
+    rows = []
+    with open(path, encoding="utf-8", newline="") as f:
+        reader = csv.reader(f)
+        header = next(reader, None)
+        has_yoy = header is not None and "yoy_pct" in header
+        for line in reader:
+            if len(line) < 2 or line[1] == "":
+                continue
+            d = line[0]
+            v = float(line[1])
+            y = float(line[2]) if (has_yoy and len(line) > 2 and line[2] != "") else None
+            rows.append((d, v, y))
+    return rows
+
+
+def build_macro_payload(config_path=None, data_dir=None, points=None) -> dict:
+    config_path = config_path or SERIES_CONFIG      # 呼び出し時に解決（monkeypatch対応）
+    data_dir = data_dir or MACRO_DIR
+    if not Path(config_path).exists():
+        return {"series": []}
+    cfg = json.loads(Path(config_path).read_text(encoding="utf-8"))
+    pts = points or cfg.get("history_points", 180)
+    series = []
+    for s in cfg.get("series", []):
+        fp = Path(data_dir) / f"{s['id']}.csv"
+        if not fp.exists():
+            continue
+        rows = _read_series_csv(fp)
+        if not rows:
+            continue
+        d, v, y = rows[-1]
+        series.append({
+            "id": s["id"], "country": s["country"], "indicator": s["indicator"],
+            "unit": s.get("unit", ""),
+            "latest": v, "latest_date": d, "yoy": y,
+            "history": [[r[0], r[1]] for r in rows][-pts:],
+            "history_yoy": [[r[0], r[2]] for r in rows if r[2] is not None][-pts:],
+        })
+    return {"series": series}
+
+
+def macro_timeseries_rows(config_path=None, data_dir=None) -> list:
+    config_path = config_path or SERIES_CONFIG      # 呼び出し時に解決（monkeypatch対応）
+    data_dir = data_dir or MACRO_DIR
+    if not Path(config_path).exists():
+        return []
+    cfg = json.loads(Path(config_path).read_text(encoding="utf-8"))
+    start = cfg.get("history_start", "2000-01-01")
+    out = []
+    for s in cfg.get("series", []):
+        fp = Path(data_dir) / f"{s['id']}.csv"
+        if not fp.exists():
+            continue
+        for d, v, y in _read_series_csv(fp):
+            if d >= start:
+                out.append((d, s["country"], s["indicator"], v, y))
+    out.sort(key=lambda r: (r[0], r[1], r[2]))
+    return out
 
 
 MEETING_HEADERS = [
@@ -95,6 +159,20 @@ def build_xlsx(data: dict, path: Path = XLSX) -> None:
                 ws3.append([m.get("date", ""), label, text, m.get("id", "")])
     _style_header(ws3)
 
+    macro = data.get("macro", {}).get("series", [])
+    ws4 = wb.create_sheet("マクロ_最新")
+    ws4.append(["国", "指標", "最新値", "日付", "前年比%", "単位"])
+    for s in macro:
+        ws4.append([s["country"], s["indicator"], s["latest"], s["latest_date"],
+                    "" if s.get("yoy") is None else s["yoy"], s.get("unit", "")])
+    _style_header(ws4)
+
+    ws5 = wb.create_sheet("マクロ_時系列")
+    ws5.append(["日付", "国", "指標", "値", "前年比%"])
+    for d, country, ind, v, y in macro_timeseries_rows():
+        ws5.append([d, country, ind, v, "" if y is None else y])
+    _style_header(ws5)
+
     for ws in wb.worksheets:
         for col in range(1, ws.max_column + 1):
             ws.column_dimensions[get_column_letter(col)].width = 24
@@ -105,6 +183,7 @@ def build_xlsx(data: dict, path: Path = XLSX) -> None:
 
 def main() -> int:
     data = load_data()
+    data["macro"] = build_macro_payload()
     write_data_js(data)
     build_xlsx(data)
     print(f"OK: {len(data.get('meetings', []))} meetings, "

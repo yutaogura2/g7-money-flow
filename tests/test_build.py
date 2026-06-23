@@ -55,7 +55,7 @@ def test_build_xlsx_sheets_and_rows(tmp_path, sample_json):
     out = tmp_path / "out.xlsx"
     build.build_xlsx(data, out)
     wb = load_workbook(out)
-    assert wb.sheetnames == ["会議ログ", "カレンダー", "考察サマリ"]
+    assert wb.sheetnames == ["会議ログ", "カレンダー", "考察サマリ", "マクロ_最新", "マクロ_時系列"]
     assert wb["会議ログ"].max_row == 2       # ヘッダ + 1会議
     assert wb["カレンダー"].max_row == 2      # ヘッダ + 1イベント
     assert wb["考察サマリ"].max_row == 5      # ヘッダ + 4観点
@@ -72,3 +72,51 @@ def test_build_xlsx_source_hyperlink(tmp_path, sample_json):
     url_cell = ws.cell(row=2, column=len(build.MEETING_HEADERS))
     assert url_cell.hyperlink is not None
     assert url_cell.hyperlink.target == "https://example.com/a"
+
+
+def _write_macro_fixture(tmp_path):
+    (tmp_path / "macro_data").mkdir()
+    (tmp_path / "macro_data" / "M2SL.csv").write_text(
+        "date,value,yoy_pct\n2019-01-01,100.0,\n2020-01-01,110.0,10.0\n", encoding="utf-8")
+    (tmp_path / "series_config.json").write_text(
+        json.dumps({"history_start": "2000-01-01", "history_points": 180,
+                    "series": [{"id": "M2SL", "country": "米国",
+                                "indicator": "マネーサプライ(M2)", "unit": "10億ドル",
+                                "transform": "yoy_pct_also"}]}), encoding="utf-8")
+
+
+def test_build_macro_payload(tmp_path):
+    _write_macro_fixture(tmp_path)
+    payload = build.build_macro_payload(
+        config_path=tmp_path / "series_config.json", data_dir=tmp_path / "macro_data")
+    s = payload["series"][0]
+    assert s["country"] == "米国"
+    assert s["latest"] == 110.0
+    assert s["latest_date"] == "2020-01-01"
+    assert s["yoy"] == 10.0
+    assert s["history"] == [["2019-01-01", 100.0], ["2020-01-01", 110.0]]
+    assert s["history_yoy"] == [["2020-01-01", 10.0]]
+
+
+def test_macro_timeseries_rows(tmp_path):
+    _write_macro_fixture(tmp_path)
+    rows = build.macro_timeseries_rows(
+        config_path=tmp_path / "series_config.json", data_dir=tmp_path / "macro_data")
+    assert ("2020-01-01", "米国", "マネーサプライ(M2)", 110.0, 10.0) in rows
+
+
+def test_build_xlsx_includes_macro_sheets(tmp_path, sample_json, monkeypatch):
+    _write_macro_fixture(tmp_path)
+    monkeypatch.setattr(build, "SERIES_CONFIG", tmp_path / "series_config.json")
+    monkeypatch.setattr(build, "MACRO_DIR", tmp_path / "macro_data")
+    data = build.load_data(sample_json)
+    data["macro"] = build.build_macro_payload(
+        config_path=tmp_path / "series_config.json", data_dir=tmp_path / "macro_data")
+    out = tmp_path / "out.xlsx"
+    build.build_xlsx(data, out)
+    wb = load_workbook(out)
+    assert "マクロ_最新" in wb.sheetnames
+    assert "マクロ_時系列" in wb.sheetnames
+    assert wb["マクロ_最新"].cell(row=1, column=1).value == "国"
+    assert wb["マクロ_最新"].max_row == 2          # ヘッダ + 1シリーズ
+    assert wb["マクロ_時系列"].max_row == 3         # ヘッダ + 2行

@@ -1,0 +1,24 @@
+{
+  "history_start": "2000-01-01",
+  "history_points": 180,
+  "_note": "FRED上でOECD由来の国際M2系列・一部CPI系列は提供終了（古い値）のため除外済み。中銀バランスシート(米欧日)が世界の流動性の主指標。米国以外のM2・中国/日本CPIは現行FRED系列が無く未収録（将来は別ソースで補完予定）。",
+  "series": [
+    { "id": "M2SL", "country": "米国", "indicator": "マネーサプライ(M2)", "unit": "10億ドル", "transform": "yoy_pct_also" },
+    { "id": "WALCL", "country": "米国", "indicator": "中銀バランスシート", "unit": "百万ドル", "transform": "level" },
+    { "id": "FEDFUNDS", "country": "米国", "indicator": "政策金利", "unit": "%", "transform": "level" },
+    { "id": "DGS10", "country": "米国", "indicator": "10年国債利回り", "unit": "%", "transform": "level" },
+    { "id": "CPIAUCSL", "country": "米国", "indicator": "CPI", "unit": "指数", "transform": "yoy_pct_also" },
+    { "id": "CPILFESL", "country": "米国", "indicator": "コアCPI", "unit": "指数", "transform": "yoy_pct_also" },
+    { "id": "GDPC1", "country": "米国", "indicator": "実質GDP", "unit": "10億ドル", "transform": "yoy_pct_also" },
+    { "id": "UNRATE", "country": "米国", "indicator": "失業率", "unit": "%", "transform": "level" },
+    { "id": "ECBASSETSW", "country": "ユーロ圏", "indicator": "中銀バランスシート", "unit": "百万ユーロ", "transform": "level" },
+    { "id": "ECBDFR", "country": "ユーロ圏", "indicator": "政策金利", "unit": "%", "transform": "level" },
+    { "id": "IRLTLT01DEM156N", "country": "ユーロ圏", "indicator": "10年国債利回り", "unit": "%", "transform": "level" },
+    { "id": "CP0000EZ19M086NEST", "country": "ユーロ圏", "indicator": "CPI", "unit": "指数", "transform": "yoy_pct_also" },
+    { "id": "JPNASSETS", "country": "日本", "indicator": "中銀バランスシート", "unit": "億円", "transform": "level" },
+    { "id": "IRLTLT01JPM156N", "country": "日本", "indicator": "10年国債利回り", "unit": "%", "transform": "level" },
+    { "id": "LRUNTTTTJPM156S", "country": "日本", "indicator": "失業率", "unit": "%", "transform": "level" },
+    { "id": "IRLTLT01GBM156N", "country": "英国", "indicator": "10年国債利回り", "unit": "%", "transform": "level" },
+    { "id": "IRLTLT01CAM156N", "country": "カナダ", "indicator": "10年国債利回り", "unit": "%", "transform": "level" }
+  ]
+}

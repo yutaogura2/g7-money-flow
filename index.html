@@ -41,12 +41,16 @@
   <button data-view="meetings">会議・声明ログ</button>
   <button data-view="calendar">イベントカレンダー</button>
   <button data-view="analysis">考察ビュー</button>
+  <button data-view="macro">マクロ</button>
+  <button data-view="moneyflow">マネーの流れ</button>
 </nav>
 <main>
   <section id="view-overview" class="view"></section>
   <section id="view-meetings" class="view hidden"></section>
   <section id="view-calendar" class="view hidden"></section>
   <section id="view-analysis" class="view hidden"></section>
+  <section id="view-macro" class="view hidden"></section>
+  <section id="view-moneyflow" class="view hidden"></section>
 </main>
 <footer id="disclaimer"></footer>
 
@@ -61,7 +65,7 @@ function todayStr(){ return new Date().toISOString().slice(0,10); }
 function switchView(name){
   document.querySelectorAll('nav#tabs button').forEach(b =>
     b.classList.toggle('active', b.dataset.view === name));
-  ['overview','meetings','calendar','analysis'].forEach(v =>
+  ['overview','meetings','calendar','analysis','macro','moneyflow'].forEach(v =>
     document.getElementById('view-'+v).classList.toggle('hidden', v !== name));
 }
 
@@ -215,6 +219,124 @@ function renderAnalysis(){
     </div>`).join('');
 }
 
+function indexTo100(points){
+  if(!points.length) return [];
+  const base = points[0][1];
+  if(!base) return points;
+  return points.map(p => [p[0], (p[1]/base)*100]);
+}
+
+function lineChartSVG(seriesList, opts){
+  opts = opts || {};
+  const W = opts.w || 320, H = opts.h || 90, pad = 4;
+  const vals = [], xset = new Set();
+  seriesList.forEach(s => (s.points||[]).forEach(p => { vals.push(p[1]); xset.add(p[0]); }));
+  if(!vals.length) return '<div class="meta-row">データなし</div>';
+  const xs = [...xset].sort();
+  const nx = Math.max(1, xs.length - 1);
+  const minV = Math.min(...vals), maxV = Math.max(...vals);
+  const sx = d => pad + (xs.indexOf(d)/nx) * (W - 2*pad);
+  const sy = v => (maxV===minV) ? H/2 : pad + (1-(v-minV)/(maxV-minV)) * (H - 2*pad);
+  const colors = ['#4f8cff','#ff8c4f','#4fd08c','#d04f8c','#c08cff'];
+  const paths = seriesList.map((s,si) => {
+    const pts = s.points || [];
+    const d = pts.map((p,k) => `${k?'L':'M'}${sx(p[0]).toFixed(1)},${sy(p[1]).toFixed(1)}`).join(' ');
+    return `<path d="${d}" fill="none" stroke="${s.color||colors[si%colors.length]}" stroke-width="1.5"/>`;
+  }).join('');
+  const zero = (minV < 0 && maxV > 0) ? `<line x1="${pad}" y1="${sy(0).toFixed(1)}" x2="${W-pad}" y2="${sy(0).toFixed(1)}" stroke="#3a4a66" stroke-width="0.5"/>` : '';
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none">${zero}${paths}</svg>`;
+}
+
+function fmtYoy(y){ return (y==null) ? '—' : (y>0?'+':'') + y + '%'; }
+
+function macroCard(s){
+  return `<div class="card" data-ind="${esc(s.indicator)}" style="margin:0">
+    <div class="meta-row" style="margin:0">${esc(s.country)}</div>
+    <h3 style="margin:2px 0">${esc(s.indicator)}</h3>
+    <div><span style="font-size:20px;font-weight:700">${esc(s.latest)}</span> <span class="meta-row" style="display:inline">${esc(s.unit)}</span></div>
+    <div class="meta-row">最新 ${esc(s.latest_date)}　前年比 ${esc(fmtYoy(s.yoy))}</div>
+    ${lineChartSVG([{points:s.history}])}
+  </div>`;
+}
+
+function renderMacro(){
+  const el = document.getElementById('view-macro');
+  const macro = (DATA.macro && DATA.macro.series) || [];
+  if(!macro.length){
+    el.innerHTML = '<div class="card meta-row">マクロデータがありません。<code>python fetch_macro.py</code> を実行してください。</div>';
+    return;
+  }
+  const inds = [...new Set(macro.map(s => s.indicator))];
+  el.innerHTML = `
+    <div class="card">
+      <select id="macro-ind" style="padding:8px; background:var(--bg); color:var(--txt); border:1px solid var(--line); border-radius:6px;">
+        <option value="">すべての指標</option>
+        ${inds.map(i => `<option>${esc(i)}</option>`).join('')}
+      </select>
+    </div>
+    <div id="macro-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px">
+      ${macro.map(macroCard).join('')}
+    </div>`;
+  document.getElementById('macro-ind').addEventListener('change', e => {
+    const v = e.target.value;
+    document.querySelectorAll('#macro-grid .card').forEach(c =>
+      c.style.display = (!v || c.dataset.ind === v) ? '' : 'none');
+  });
+}
+
+function legendHTML(lines){
+  return '<div class="meta-row">' +
+    lines.map(l => `<span style="color:${l.color}">●</span> ${esc(l.label)}`).join('　') +
+    '</div>';
+}
+
+function renderMoneyFlow(){
+  const el = document.getElementById('view-moneyflow');
+  const macro = (DATA.macro && DATA.macro.series) || [];
+  const a = DATA.macro_analysis || {};
+  const colors = ['#4f8cff','#ff8c4f','#4fd08c','#d04f8c','#c08cff'];
+  const m2 = macro.filter(s => s.indicator.indexOf('マネーサプライ') === 0);
+  const bs = macro.filter(s => s.indicator === '中銀バランスシート');
+  const rates = macro.filter(s => s.indicator === '政策金利' || s.indicator === '10年国債利回り');
+
+  const m2lines = m2.map((s,i) => ({label:s.country, points:s.history_yoy||[], color:colors[i%colors.length]}));
+  const bslines = bs.map((s,i) => ({label:s.country, points:indexTo100(s.history||[]), color:colors[i%colors.length]}));
+
+  const analysisCard = (a.global_liquidity || a.fx_rates || a.implications) ? `
+    <div class="card">
+      <h3>考察：世界の流動性</h3>
+      ${a.global_liquidity ? `<div>${esc(a.global_liquidity)}</div>` : ''}
+      ${a.fx_rates ? `<div style="margin-top:6px"><strong>為替・金利:</strong> ${esc(a.fx_rates)}</div>` : ''}
+      ${a.implications ? `<div style="margin-top:6px"><strong>投資の含意:</strong> ${esc(a.implications)}</div>` : ''}
+      <div class="meta-row">更新: ${esc(a.updated || '—')}</div>
+    </div>` : '';
+
+  if(!macro.length){
+    el.innerHTML = '<div class="card meta-row">マクロデータがありません。<code>python fetch_macro.py</code> を実行してください。</div>';
+    return;
+  }
+  el.innerHTML = `
+    ${analysisCard}
+    <div class="card">
+      <h3>マネーサプライ(M2) 前年比 ── 主要国比較</h3>
+      ${legendHTML(m2lines)}
+      ${lineChartSVG(m2lines, {h:140})}
+      <div class="meta-row">最新前年比: ${m2.map(s => `${esc(s.country)} ${esc(fmtYoy(s.yoy))}`).join('　') || '—'}</div>
+    </div>
+    <div class="card">
+      <h3>中銀バランスシート ── 起点=100で比較（拡大/縮小）</h3>
+      ${legendHTML(bslines)}
+      ${lineChartSVG(bslines, {h:140})}
+    </div>
+    <div class="card">
+      <h3>金利</h3>
+      <table style="width:100%; border-collapse:collapse">
+        <tr class="meta-row"><td>国</td><td>指標</td><td>最新</td><td>日付</td></tr>
+        ${rates.map(s => `<tr><td>${esc(s.country)}</td><td>${esc(s.indicator)}</td><td>${esc(s.latest)}%</td><td class="meta-row">${esc(s.latest_date)}</td></tr>`).join('') || '<tr><td class="meta-row">データなし</td></tr>'}
+      </table>
+    </div>`;
+}
+
 function init(){
   document.getElementById('last-updated').textContent =
     '最終更新: ' + (DATA.meta && DATA.meta.last_updated ? DATA.meta.last_updated : '—');
@@ -227,6 +349,8 @@ function init(){
   renderMeetings();
   renderCalendar();
   renderAnalysis();
+  renderMacro();
+  renderMoneyFlow();
 }
 init();
 </script>
