@@ -127,3 +127,19 @@ def test_build_macro_payload_includes_group(tmp_path):
     p = build.build_macro_payload(
         config_path=tmp_path / "series_config.json", data_dir=tmp_path / "macro_data")
     assert p["series"][0]["group"] == "fundamental"
+
+
+def test_series_stats():
+    s = build._series_stats([1.0, 2.0, 3.0, 4.0, 5.0])
+    assert s["pctile"] == 100
+    assert abs(s["zscore"] - 1.41) < 0.01      # (5-3)/sqrt(2)
+    assert abs(s["std"] - 1.41421) < 0.001
+    flat = build._series_stats([2.0, 2.0, 2.0])
+    assert flat["zscore"] == 0.0
+
+
+def test_value_on_or_before():
+    rows = [("2026-04-01", 1.0, None), ("2026-05-01", 2.0, None), ("2026-06-01", 3.0, None)]
+    assert build._value_on_or_before(rows, "2026-05-15") == 2.0
+    assert build._value_on_or_before(rows, "2026-06-01") == 3.0
+    assert build._value_on_or_before(rows, "2026-03-01") is None

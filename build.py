@@ -4,6 +4,7 @@
 import csv
 import json
 import sys
+from datetime import date, timedelta
 from pathlib import Path
 
 from openpyxl import Workbook
@@ -42,6 +43,28 @@ def _read_series_csv(path: Path) -> list:
             y = float(line[2]) if (has_yoy and len(line) > 2 and line[2] != "") else None
             rows.append((d, v, y))
     return rows
+
+
+def _series_stats(values: list) -> dict:
+    if not values:
+        return {"mean": 0.0, "std": 0.0, "zscore": 0.0, "pctile": 0}
+    latest = values[-1]
+    n = len(values)
+    mean = sum(values) / n
+    std = (sum((v - mean) ** 2 for v in values) / n) ** 0.5
+    z = round((latest - mean) / std, 2) if std else 0.0
+    pct = round(sum(1 for v in values if v <= latest) / n * 100)
+    return {"mean": mean, "std": std, "zscore": z, "pctile": pct}
+
+
+def _value_on_or_before(rows: list, target: str):
+    val = None
+    for r in rows:
+        if r[0] <= target:
+            val = r[1]
+        else:
+            break
+    return val
 
 
 def build_macro_payload(config_path=None, data_dir=None, points=None) -> dict:
