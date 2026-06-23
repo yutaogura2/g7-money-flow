@@ -299,7 +299,7 @@ function renderMoneyFlow(){
   const macro = (DATA.macro && DATA.macro.series) || [];
   const a = DATA.macro_analysis || {};
   const colors = ['#4f8cff','#ff8c4f','#4fd08c','#d04f8c','#c08cff'];
-  const m2 = macro.filter(s => s.indicator.indexOf('マネーサプライ') === 0);
+  const m2 = macro.filter(s => s.indicator === 'マネーサプライ(M2)');
   const bs = macro.filter(s => s.indicator === '中銀バランスシート');
   const rates = macro.filter(s => s.indicator === '政策金利' || s.indicator === '10年国債利回り');
 
