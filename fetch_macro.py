@@ -4,6 +4,7 @@
 import csv
 import io
 import json
+import re
 import sys
 import urllib.parse
 import urllib.request
@@ -16,6 +17,8 @@ API_KEY_FILE = ROOT / "fred_api_key.txt"
 MACRO_DIR = ROOT / "macro_data"
 FRED_URL = "https://api.stlouisfed.org/fred/series/observations"
 ECB_URL = "https://data-api.ecb.europa.eu/service/data"
+BOJ_M2_CSV = "https://www.stat-search.boj.or.jp/ssi/mtshtml/csv/md02_m_1.csv"
+BOJ_M2_CODE = "MD02'MAM1NAM2M2MO"   # マネーストック M2 平均残高(億円)
 
 
 def load_config(path: Path = SERIES_CONFIG) -> dict:
@@ -127,9 +130,44 @@ def fetch_ecb_series(ecb_key: str, urlopen=urllib.request.urlopen) -> list:
     return _parse_ecb_csv(text)
 
 
-def get_rows(series: dict, api_key: str, *, fred_fetcher, ecb_fetcher) -> list:
-    if series.get("source") == "ecb":
+def _parse_boj_m2_csv(text: str) -> list:
+    reader = list(csv.reader(io.StringIO(text)))
+    code_row = next((r for r in reader if r and r[0] == "データコード"), None)
+    if not code_row or BOJ_M2_CODE not in code_row:
+        return []
+    col = code_row.index(BOJ_M2_CODE)
+    out = []
+    for r in reader:
+        if not r or not re.match(r"^\d{4}/\d{1,2}$", r[0]):
+            continue
+        if col >= len(r):
+            continue
+        val = r[col].strip().replace(",", "")
+        if val in ("", "-", "ND", "NA"):
+            continue
+        try:
+            v = float(val)
+        except ValueError:
+            continue
+        y, m = r[0].split("/")
+        out.append((f"{y}-{int(m):02d}-01", v / 10000.0))   # 億円→兆円
+    out.sort(key=lambda x: x[0])
+    return out
+
+
+def fetch_boj_m2(url: str = BOJ_M2_CSV, urlopen=urllib.request.urlopen) -> list:
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urlopen(req, timeout=30) as r:
+        raw = r.read()
+    return _parse_boj_m2_csv(raw.decode("cp932"))
+
+
+def get_rows(series: dict, api_key: str, *, fred_fetcher, ecb_fetcher, boj_fetcher=None) -> list:
+    src = series.get("source")
+    if src == "ecb":
         return ecb_fetcher(series["ecb_key"])
+    if src == "boj":
+        return boj_fetcher()
     return parse_observations(fred_fetcher(series["id"], api_key))
 
 

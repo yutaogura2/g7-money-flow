@@ -148,3 +148,34 @@ def test_run_skips_manual_source(tmp_path):
     assert res["ok"] == [] and res["failed"] == []
     # 既存の手動CSVが上書きされていない
     assert (tmp_path / "JP_M2_MANUAL.csv").read_text(encoding="utf-8") == existing
+
+
+def test_parse_boj_m2_csv_extracts_m2_level_in_chocho():
+    text = (
+        "主要時系列統計データ表\n"
+        "2026/06/23 15:00\n"
+        ",M2前年比,M2平残\n"
+        "系列名称,M2/前年比,M2/平残\n"
+        "データコード,MD02'MAM1YAM2M2MO,MD02'MAM1NAM2M2MO\n"
+        "単位,%,億円\n"
+        "2025/05,2.4,12660000\n"
+        "2026/05,2.5,12980932\n"
+    )
+    rows = fetch_macro._parse_boj_m2_csv(text)
+    assert rows == [("2025-05-01", 1266.0), ("2026-05-01", 1298.0932)]
+
+
+def test_fetch_boj_m2_decodes_cp932():
+    sample = (
+        "x\nx\nx\n系列名称,M2/平残\nデータコード,MD02'MAM1NAM2M2MO\n単位,億円\n"
+        "2026/05,12980932\n"
+    )
+    class _R:
+        def __init__(self, b): self._b = b
+        def read(self): return self._b
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+    def fake_urlopen(req, timeout=30):
+        return _R(sample.encode("cp932"))
+    rows = fetch_macro.fetch_boj_m2(urlopen=fake_urlopen)
+    assert rows == [("2026-05-01", 1298.0932)]
