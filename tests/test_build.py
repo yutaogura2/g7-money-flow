@@ -162,3 +162,25 @@ def test_payload_zscore_stress_delta(tmp_path):
     assert abs(s["stress"] - 1.41) < 0.01            # high → +z
     assert s["delta"] == 1.0                          # 06-01の約30日前=04-01の4 → 5-4
     assert s["delta_z"] != 0.0
+
+
+def test_build_signals_regime_and_movers():
+    series = [
+        {"id": "A", "country": "a", "indicator": "i", "latest": 5, "stress": 1.0, "delta": 1.0, "delta_z": 2.0},
+        {"id": "B", "country": "b", "indicator": "i", "latest": 3, "stress": 0.5, "delta": -0.2, "delta_z": -0.3},
+        {"id": "C", "country": "c", "indicator": "i", "latest": 2, "stress": None, "delta": 0.1, "delta_z": 0.1},
+    ]
+    sig = build.build_signals(series)
+    assert sig["regime"]["score"] == 0.75          # mean(1.0, 0.5)
+    assert sig["regime"]["label"] == "リスクオフ"
+    assert sig["regime"]["level"] == "warn"
+    assert sig["movers"][0]["id"] == "A"           # |delta_z|=2 が最大
+    assert sig["movers"][0]["dir"] == "up"
+
+
+def test_payload_includes_signals(tmp_path):
+    _write_macro_fixture(tmp_path)
+    p = build.build_macro_payload(
+        config_path=tmp_path / "series_config.json", data_dir=tmp_path / "macro_data")
+    assert "signals" in p
+    assert "regime" in p["signals"] and "movers" in p["signals"]

@@ -67,6 +67,27 @@ def _value_on_or_before(rows: list, target: str):
     return val
 
 
+def build_signals(series: list) -> dict:
+    stresses = [s["stress"] for s in series if s.get("stress") is not None]
+    if stresses:
+        score = round(sum(stresses) / len(stresses), 2)
+        if score >= 0.5:
+            label, level = "リスクオフ", "warn"
+        elif score <= -0.5:
+            label, level = "リスクオン", "calm"
+        else:
+            label, level = "中立", "ok"
+    else:
+        score, label, level = None, "—", "ok"
+    ranked = sorted(series, key=lambda s: abs(s.get("delta_z") or 0), reverse=True)[:6]
+    movers = [{
+        "id": m["id"], "country": m["country"], "indicator": m["indicator"],
+        "latest": m["latest"], "delta": m.get("delta", 0), "delta_z": m.get("delta_z", 0),
+        "dir": "up" if (m.get("delta") or 0) >= 0 else "down",
+    } for m in ranked]
+    return {"regime": {"score": score, "label": label, "level": level}, "movers": movers}
+
+
 def build_macro_payload(config_path=None, data_dir=None, points=None) -> dict:
     config_path = config_path or SERIES_CONFIG      # 呼び出し時に解決（monkeypatch対応）
     data_dir = data_dir or MACRO_DIR
@@ -104,7 +125,7 @@ def build_macro_payload(config_path=None, data_dir=None, points=None) -> dict:
             "history": [[r[0], r[1]] for r in rows][-pts:],
             "history_yoy": [[r[0], r[2]] for r in rows if r[2] is not None][-pts:],
         })
-    return {"series": series}
+    return {"series": series, "signals": build_signals(series)}
 
 
 def macro_timeseries_rows(config_path=None, data_dir=None) -> list:
