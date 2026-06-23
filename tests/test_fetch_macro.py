@@ -80,3 +80,30 @@ def test_run_writes_ok_and_skips_failures(tmp_path):
     good = (tmp_path / "GOOD.csv").read_text(encoding="utf-8")
     assert good.startswith("date,value,yoy_pct")
     assert "10.0" in good  # YoY が計算されている
+
+
+class _FakeResp:
+    def __init__(self, text): self._t = text
+    def read(self): return self._t.encode("utf-8")
+    def __enter__(self): return self
+    def __exit__(self, *a): return False
+
+
+def test_parse_ecb_csv_normalizes_and_handles_quoted_commas():
+    text = ('TIME_PERIOD,OBS_VALUE,TITLE_COMPL\n'
+            '2026-03,16282398,"M2, stocks"\n'
+            '2026-02,16244868,"M2, stocks"\n'
+            '2026-04,,"empty value"\n')
+    rows = fetch_macro._parse_ecb_csv(text)
+    assert rows == [("2026-02-01", 16244868.0), ("2026-03-01", 16282398.0)]
+
+
+def test_fetch_ecb_series_builds_url_and_parses():
+    captured = {}
+    def fake_urlopen(req, timeout=30):
+        captured["url"] = req.full_url
+        return _FakeResp("TIME_PERIOD,OBS_VALUE\n2026-03,16282398\n2026-02,16244868\n")
+    rows = fetch_macro.fetch_ecb_series("BSI/M.U2.Y.V.M20.X.1.U2.2300.Z01.E", urlopen=fake_urlopen)
+    assert "data-api.ecb.europa.eu/service/data/BSI/M.U2.Y.V.M20.X.1.U2.2300.Z01.E" in captured["url"]
+    assert "format=csvdata" in captured["url"]
+    assert rows == [("2026-02-01", 16244868.0), ("2026-03-01", 16282398.0)]

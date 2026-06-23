@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """FRED からマクロ時系列を取得し macro_data/*.csv を生成する。"""
+import csv
+import io
 import json
 import sys
 import urllib.parse
@@ -13,6 +15,7 @@ SERIES_CONFIG = ROOT / "series_config.json"
 API_KEY_FILE = ROOT / "fred_api_key.txt"
 MACRO_DIR = ROOT / "macro_data"
 FRED_URL = "https://api.stlouisfed.org/fred/series/observations"
+ECB_URL = "https://data-api.ecb.europa.eu/service/data"
 
 
 def load_config(path: Path = SERIES_CONFIG) -> dict:
@@ -91,6 +94,37 @@ def fetch_series(series_id: str, api_key: str, urlopen=urllib.request.urlopen) -
     q = urllib.parse.urlencode({"series_id": series_id, "api_key": api_key, "file_type": "json"})
     with urlopen(f"{FRED_URL}?{q}", timeout=30) as r:
         return json.loads(r.read().decode("utf-8"))
+
+
+def _parse_ecb_csv(text: str) -> list:
+    rows = []
+    reader = csv.DictReader(io.StringIO(text))
+    for row in reader:
+        tp = (row.get("TIME_PERIOD") or "").strip()
+        ov = (row.get("OBS_VALUE") or "").strip()
+        if not tp or ov == "":
+            continue
+        try:
+            v = float(ov)
+        except ValueError:
+            continue
+        if len(tp) == 7:        # YYYY-MM
+            d = tp + "-01"
+        elif len(tp) == 4:      # YYYY
+            d = tp + "-01-01"
+        else:                   # YYYY-MM-DD など
+            d = tp
+        rows.append((d, v))
+    rows.sort(key=lambda r: r[0])
+    return rows
+
+
+def fetch_ecb_series(ecb_key: str, urlopen=urllib.request.urlopen) -> list:
+    url = f"{ECB_URL}/{ecb_key}?format=csvdata"
+    req = urllib.request.Request(url, headers={"Accept": "text/csv"})
+    with urlopen(req, timeout=30) as r:
+        text = r.read().decode("utf-8")
+    return _parse_ecb_csv(text)
 
 
 def run(config: dict, api_key: str, fetcher=fetch_series, data_dir: Path = MACRO_DIR) -> dict:
