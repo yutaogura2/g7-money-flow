@@ -63,6 +63,7 @@ def build_macro_payload(config_path=None, data_dir=None, points=None) -> dict:
         series.append({
             "id": s["id"], "country": s["country"], "indicator": s["indicator"],
             "unit": s.get("unit", ""),
+            "group": s.get("group", "fundamental"),
             "latest": v, "latest_date": d, "yoy": y,
             "history": [[r[0], r[1]] for r in rows][-pts:],
             "history_yoy": [[r[0], r[2]] for r in rows if r[2] is not None][-pts:],

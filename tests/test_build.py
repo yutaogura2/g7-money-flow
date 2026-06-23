@@ -120,3 +120,10 @@ def test_build_xlsx_includes_macro_sheets(tmp_path, sample_json, monkeypatch):
     assert wb["マクロ_最新"].cell(row=1, column=1).value == "国"
     assert wb["マクロ_最新"].max_row == 2          # ヘッダ + 1シリーズ
     assert wb["マクロ_時系列"].max_row == 3         # ヘッダ + 2行
+
+
+def test_build_macro_payload_includes_group(tmp_path):
+    _write_macro_fixture(tmp_path)
+    p = build.build_macro_payload(
+        config_path=tmp_path / "series_config.json", data_dir=tmp_path / "macro_data")
+    assert p["series"][0]["group"] == "fundamental"
