@@ -284,6 +284,59 @@ function renderMacro(){
   });
 }
 
+function legendHTML(lines){
+  return '<div class="meta-row">' +
+    lines.map(l => `<span style="color:${l.color}">●</span> ${esc(l.label)}`).join('　') +
+    '</div>';
+}
+
+function renderMoneyFlow(){
+  const el = document.getElementById('view-moneyflow');
+  const macro = (DATA.macro && DATA.macro.series) || [];
+  const a = DATA.macro_analysis || {};
+  const colors = ['#4f8cff','#ff8c4f','#4fd08c','#d04f8c','#c08cff'];
+  const m2 = macro.filter(s => s.indicator.indexOf('マネーサプライ') === 0);
+  const bs = macro.filter(s => s.indicator === '中銀バランスシート');
+  const rates = macro.filter(s => s.indicator === '政策金利' || s.indicator === '10年国債利回り');
+
+  const m2lines = m2.map((s,i) => ({label:s.country, points:s.history_yoy||[], color:colors[i%colors.length]}));
+  const bslines = bs.map((s,i) => ({label:s.country, points:indexTo100(s.history||[]), color:colors[i%colors.length]}));
+
+  const analysisCard = (a.global_liquidity || a.fx_rates || a.implications) ? `
+    <div class="card">
+      <h3>考察：世界の流動性</h3>
+      ${a.global_liquidity ? `<div>${esc(a.global_liquidity)}</div>` : ''}
+      ${a.fx_rates ? `<div style="margin-top:6px"><strong>為替・金利:</strong> ${esc(a.fx_rates)}</div>` : ''}
+      ${a.implications ? `<div style="margin-top:6px"><strong>投資の含意:</strong> ${esc(a.implications)}</div>` : ''}
+      <div class="meta-row">更新: ${esc(a.updated || '—')}</div>
+    </div>` : '';
+
+  if(!macro.length){
+    el.innerHTML = '<div class="card meta-row">マクロデータがありません。<code>python fetch_macro.py</code> を実行してください。</div>';
+    return;
+  }
+  el.innerHTML = `
+    ${analysisCard}
+    <div class="card">
+      <h3>マネーサプライ(M2) 前年比 ── 主要国比較</h3>
+      ${legendHTML(m2lines)}
+      ${lineChartSVG(m2lines, {h:140})}
+      <div class="meta-row">最新前年比: ${m2.map(s => `${esc(s.country)} ${esc(fmtYoy(s.yoy))}`).join('　') || '—'}</div>
+    </div>
+    <div class="card">
+      <h3>中銀バランスシート ── 起点=100で比較（拡大/縮小）</h3>
+      ${legendHTML(bslines)}
+      ${lineChartSVG(bslines, {h:140})}
+    </div>
+    <div class="card">
+      <h3>金利</h3>
+      <table style="width:100%; border-collapse:collapse">
+        <tr class="meta-row"><td>国</td><td>指標</td><td>最新</td><td>日付</td></tr>
+        ${rates.map(s => `<tr><td>${esc(s.country)}</td><td>${esc(s.indicator)}</td><td>${esc(s.latest)}%</td><td class="meta-row">${esc(s.latest_date)}</td></tr>`).join('') || '<tr><td class="meta-row">データなし</td></tr>'}
+      </table>
+    </div>`;
+}
+
 function init(){
   document.getElementById('last-updated').textContent =
     '最終更新: ' + (DATA.meta && DATA.meta.last_updated ? DATA.meta.last_updated : '—');
@@ -297,6 +350,7 @@ function init(){
   renderCalendar();
   renderAnalysis();
   renderMacro();
+  renderMoneyFlow();
 }
 init();
 </script>
