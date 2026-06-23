@@ -80,8 +80,21 @@ function renderOverview(){
   const tags = {};
   meetings.forEach(m => (m.tags||[]).forEach(t => tags[t]=(tags[t]||0)+1));
   const topTags = Object.entries(tags).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const sig = (DATA.macro && DATA.macro.signals) || {};
+  const regime = sig.regime || {};
+  const regimeColor = regime.level==='warn' ? '#ff5a5a' : (regime.level==='calm' ? '#4fd08c' : '#9fb2cf');
+  const movers = sig.movers || [];
 
   el.innerHTML = `
+    <div class="card">
+      <h3>リスクレジーム</h3>
+      <div style="font-size:22px; font-weight:700; color:${regimeColor}">${esc(regime.label || '—')}</div>
+      <div class="meta-row">総合スコア ${esc(regime.score==null ? '—' : regime.score)}（高いほどリスクオフ）</div>
+    </div>
+    <div class="card">
+      <h3>直近の主な変化</h3>
+      ${movers.map(m => `<div class="meta-row">${m.dir==='up'?'▲':'▼'} ${esc(m.indicator)}・${esc(m.country)} … Δz ${esc(m.delta_z)}（最新 ${esc(m.latest)}）</div>`).join('') || '<div class="meta-row">—</div>'}
+    </div>
     <div class="kpi">
       <div class="box"><div class="num">${meetings.length}</div><div class="lbl">登録済み会議・声明</div></div>
       <div class="box"><div class="num">${(DATA.calendar||[]).length}</div><div class="lbl">カレンダー登録イベント</div></div>
@@ -251,6 +264,18 @@ function lineChartSVG(seriesList, opts){
 
 function fmtYoy(y){ return (y==null) ? '—' : (y>0?'+':'') + y + '%'; }
 
+function signalBadge(s){
+  if(s.zscore == null) return '';
+  let flag = '';
+  if(s.stress != null){
+    const st = s.stress;
+    const c = st>=1.5 ? '#ff5a5a' : (st>=0.5 ? '#ffb74f' : (st<=-0.5 ? '#4fd08c' : '#9fb2cf'));
+    const lbl = st>=1.5 ? '強ストレス' : (st>=0.5 ? 'ややストレス' : (st<=-0.5 ? '緩和' : '中立'));
+    flag = ` ・ <span style="color:${c}">● ${lbl}</span>`;
+  }
+  return `<div class="meta-row">Zスコア ${esc(s.zscore)} ・ ${esc(s.pctile)}%ile${flag}</div>`;
+}
+
 function chartCaption(seriesList){
   const vals = [], xs = [];
   seriesList.forEach(s => (s.points||[]).forEach(p => { vals.push(p[1]); xs.push(p[0]); }));
@@ -271,6 +296,7 @@ function macroCard(s){
     <h3 style="margin:0 0 2px">${esc(s.country)}</h3>
     <div><span style="font-size:20px;font-weight:700">${esc(s.latest)}</span> <span class="meta-row" style="display:inline">${esc(s.unit)}</span></div>
     <div class="meta-row">最新 ${esc(s.latest_date)}　前年比 ${esc(fmtYoy(s.yoy))}</div>
+    ${signalBadge(s)}
     ${lineChartSVG([{points:s.history}])}
     ${chartCaption([{points:s.history}])}
   </div>`;
