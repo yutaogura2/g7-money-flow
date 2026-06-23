@@ -12,3 +12,6 @@ __pycache__/
 
 # FRED APIキー（秘密：コミットしない）
 fred_api_key.txt
+
+# 自動更新ログ
+update_macro.log
