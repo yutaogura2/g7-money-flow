@@ -186,16 +186,31 @@ def compute_netliq(walcl: list, tga: list, rrp: list) -> list:
     return out
 
 
-def get_rows(series: dict, api_key: str, *, fred_fetcher, ecb_fetcher, boj_fetcher=None) -> list:
+def fetch_netliq(api_key, fred_fetcher=fetch_series) -> list:
+    walcl = parse_observations(fred_fetcher("WALCL", api_key))
+    tga = parse_observations(fred_fetcher("WTREGEN", api_key))
+    rrp = parse_observations(fred_fetcher("RRPONTSYD", api_key))
+    return compute_netliq(walcl, tga, rrp)
+
+
+def computed_dispatch(series: dict, api_key: str, fred_fetcher=fetch_series) -> list:
+    if series.get("compute") == "netliq_us":
+        return fetch_netliq(api_key, fred_fetcher)
+    raise ValueError(f"unknown compute: {series.get('compute')}")
+
+
+def get_rows(series: dict, api_key: str, *, fred_fetcher, ecb_fetcher, boj_fetcher=None, computed_fetcher=None) -> list:
     src = series.get("source")
     if src == "ecb":
         return ecb_fetcher(series["ecb_key"])
     if src == "boj":
         return boj_fetcher()
+    if src == "computed":
+        return (computed_fetcher or computed_dispatch)(series, api_key, fred_fetcher)
     return parse_observations(fred_fetcher(series["id"], api_key))
 
 
-def run(config: dict, api_key: str, fetcher=fetch_series, ecb_fetcher=None, boj_fetcher=None, data_dir: Path = MACRO_DIR) -> dict:
+def run(config: dict, api_key: str, fetcher=fetch_series, ecb_fetcher=None, boj_fetcher=None, computed_fetcher=None, data_dir: Path = MACRO_DIR) -> dict:
     if ecb_fetcher is None:
         ecb_fetcher = fetch_ecb_series
     if boj_fetcher is None:
@@ -208,7 +223,7 @@ def run(config: dict, api_key: str, fetcher=fetch_series, ecb_fetcher=None, boj_
             continue
         with_yoy = s.get("transform") == "yoy_pct_also"
         try:
-            rows = get_rows(s, api_key, fred_fetcher=fetcher, ecb_fetcher=ecb_fetcher, boj_fetcher=boj_fetcher)
+            rows = get_rows(s, api_key, fred_fetcher=fetcher, ecb_fetcher=ecb_fetcher, boj_fetcher=boj_fetcher, computed_fetcher=computed_fetcher)
             if not rows:
                 failed.append((sid, "観測値なし"))
                 continue

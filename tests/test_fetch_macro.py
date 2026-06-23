@@ -207,3 +207,27 @@ def test_compute_netliq_units_and_alignment():
     # 2026-06-10 は rrp の直近以前値が無く除外。2026-06-17 のみ。
     # (6736424 - 880713 - 3.925*1000)/1e6 = 5.851786 → 5.8518
     assert out == [("2026-06-17", 5.8518)]
+
+
+def test_fetch_netliq_uses_three_fred_series():
+    def fred(sid, key):
+        data = {
+            "WALCL": [{"date": "2026-06-17", "value": "6736424"}],
+            "WTREGEN": [{"date": "2026-06-17", "value": "880713"}],
+            "RRPONTSYD": [{"date": "2026-06-17", "value": "3.925"}],
+        }[sid]
+        return {"observations": data}
+    rows = fetch_macro.fetch_netliq("key", fred_fetcher=fred)
+    assert rows == [("2026-06-17", 5.8518)]
+
+
+def test_run_handles_computed_source(tmp_path):
+    cfg = {"series": [{"id": "NETLIQ_US", "source": "computed",
+                       "compute": "netliq_us", "transform": "yoy_pct_also"}]}
+    def fake_computed(series, api_key, fred_fetcher):
+        return [("2025-06-17", 5.0), ("2026-06-17", 5.85)]
+    res = fetch_macro.run(cfg, "key", computed_fetcher=fake_computed, data_dir=tmp_path)
+    assert res["ok"] == ["NETLIQ_US"]
+    txt = (tmp_path / "NETLIQ_US.csv").read_text(encoding="utf-8")
+    assert txt.startswith("date,value,yoy_pct")
+    assert "2026-06-17" in txt
