@@ -43,6 +43,7 @@
   <button data-view="analysis">考察ビュー</button>
   <button data-view="macro">マクロ</button>
   <button data-view="moneyflow">マネーの流れ</button>
+  <button data-view="market">市場・リスク</button>
 </nav>
 <main>
   <section id="view-overview" class="view"></section>
@@ -51,6 +52,7 @@
   <section id="view-analysis" class="view hidden"></section>
   <section id="view-macro" class="view hidden"></section>
   <section id="view-moneyflow" class="view hidden"></section>
+  <section id="view-market" class="view hidden"></section>
 </main>
 <footer id="disclaimer"></footer>
 
@@ -65,7 +67,7 @@ function todayStr(){ return new Date().toISOString().slice(0,10); }
 function switchView(name){
   document.querySelectorAll('nav#tabs button').forEach(b =>
     b.classList.toggle('active', b.dataset.view === name));
-  ['overview','meetings','calendar','analysis','macro','moneyflow'].forEach(v =>
+  ['overview','meetings','calendar','analysis','macro','moneyflow','market'].forEach(v =>
     document.getElementById('view-'+v).classList.toggle('hidden', v !== name));
 }
 
@@ -274,34 +276,43 @@ function macroCard(s){
   </div>`;
 }
 
-function renderMacro(){
-  const el = document.getElementById('view-macro');
-  const macro = (DATA.macro && DATA.macro.series) || [];
-  if(!macro.length){
-    el.innerHTML = '<div class="card meta-row">マクロデータがありません。<code>python fetch_macro.py</code> を実行してください。</div>';
+function renderIndicatorGrid(viewId, series, selectId){
+  const el = document.getElementById(viewId);
+  if(!series.length){
+    el.innerHTML = '<div class="card meta-row">データがありません。<code>python fetch_macro.py</code> を実行してください。</div>';
     return;
   }
-  const inds = [...new Set(macro.map(s => s.indicator))];
+  const inds = [...new Set(series.map(s => s.indicator))];
   const sections = inds.map(ind => `
     <div class="macro-section" data-ind="${esc(ind)}">
       <h3 style="margin:16px 0 8px; border-bottom:1px solid var(--line); padding-bottom:4px">${esc(ind)}</h3>
       <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px">
-        ${macro.filter(s => s.indicator === ind).map(macroCard).join('')}
+        ${series.filter(s => s.indicator === ind).map(macroCard).join('')}
       </div>
     </div>`).join('');
   el.innerHTML = `
     <div class="card">
-      <select id="macro-ind" style="padding:8px; background:var(--bg); color:var(--txt); border:1px solid var(--line); border-radius:6px;">
+      <select id="${selectId}" style="padding:8px; background:var(--bg); color:var(--txt); border:1px solid var(--line); border-radius:6px;">
         <option value="">すべてのカテゴリ</option>
         ${inds.map(i => `<option>${esc(i)}</option>`).join('')}
       </select>
     </div>
     ${sections}`;
-  document.getElementById('macro-ind').addEventListener('change', e => {
+  document.getElementById(selectId).addEventListener('change', e => {
     const v = e.target.value;
-    document.querySelectorAll('.macro-section').forEach(sec =>
+    el.querySelectorAll('.macro-section').forEach(sec =>
       sec.style.display = (!v || sec.dataset.ind === v) ? '' : 'none');
   });
+}
+
+function renderMacro(){
+  const all = (DATA.macro && DATA.macro.series) || [];
+  renderIndicatorGrid('view-macro', all.filter(s => s.group !== 'market'), 'macro-ind');
+}
+
+function renderMarket(){
+  const all = (DATA.macro && DATA.macro.series) || [];
+  renderIndicatorGrid('view-market', all.filter(s => s.group === 'market'), 'market-ind');
 }
 
 function legendHTML(lines){
@@ -373,6 +384,7 @@ function init(){
   renderAnalysis();
   renderMacro();
   renderMoneyFlow();
+  renderMarket();
 }
 init();
 </script>
