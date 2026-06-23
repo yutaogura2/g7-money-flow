@@ -162,6 +162,30 @@ def fetch_boj_m2(url: str = BOJ_M2_CSV, urlopen=urllib.request.urlopen) -> list:
     return _parse_boj_m2_csv(raw.decode("cp932"))
 
 
+def _nearest_prior(pairs: list, target: str):
+    val = None
+    for d, v in pairs:
+        if d <= target:
+            val = v
+        else:
+            break
+    return val
+
+
+def compute_netliq(walcl: list, tga: list, rrp: list) -> list:
+    tga_s = sorted(tga)
+    rrp_s = sorted(rrp)
+    out = []
+    for d, w in sorted(walcl):
+        t = _nearest_prior(tga_s, d)
+        r = _nearest_prior(rrp_s, d)
+        if t is None or r is None:
+            continue
+        net = (w - t - r * 1000.0) / 1e6   # 百万ドル基準 → 兆ドル
+        out.append((d, round(net, 4)))
+    return out
+
+
 def get_rows(series: dict, api_key: str, *, fred_fetcher, ecb_fetcher, boj_fetcher=None) -> list:
     src = series.get("source")
     if src == "ecb":

@@ -190,3 +190,20 @@ def test_run_handles_boj_source(tmp_path):
     txt = (tmp_path / "JP_M2_BOJ.csv").read_text(encoding="utf-8")
     assert txt.startswith("date,value,yoy_pct")
     assert "2026-05-01" in txt
+
+
+def test_nearest_prior():
+    pairs = [("2026-06-10", 1.0), ("2026-06-17", 2.0), ("2026-06-22", 3.0)]
+    assert fetch_macro._nearest_prior(pairs, "2026-06-18") == 2.0
+    assert fetch_macro._nearest_prior(pairs, "2026-06-22") == 3.0
+    assert fetch_macro._nearest_prior(pairs, "2026-06-09") is None
+
+
+def test_compute_netliq_units_and_alignment():
+    walcl = [("2026-06-10", 6700000.0), ("2026-06-17", 6736424.0)]   # 百万ドル
+    tga   = [("2026-06-10", 870000.0), ("2026-06-17", 880713.0)]     # 百万ドル
+    rrp   = [("2026-06-15", 5.0), ("2026-06-17", 3.925)]             # 十億ドル
+    out = fetch_macro.compute_netliq(walcl, tga, rrp)
+    # 2026-06-10 は rrp の直近以前値が無く除外。2026-06-17 のみ。
+    # (6736424 - 880713 - 3.925*1000)/1e6 = 5.851786 → 5.8518
+    assert out == [("2026-06-17", 5.8518)]
