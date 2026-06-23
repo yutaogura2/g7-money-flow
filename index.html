@@ -249,12 +249,28 @@ function lineChartSVG(seriesList, opts){
 
 function fmtYoy(y){ return (y==null) ? '—' : (y>0?'+':'') + y + '%'; }
 
+function chartCaption(seriesList){
+  const vals = [], xs = [];
+  seriesList.forEach(s => (s.points||[]).forEach(p => { vals.push(p[1]); xs.push(p[0]); }));
+  if(!vals.length) return '';
+  xs.sort();
+  const ym = d => (d||'').slice(0,7);
+  const fmt = v => (Math.abs(v) >= 100 ? Math.round(v) : Math.round(v*100)/100).toLocaleString();
+  const minV = Math.min(...vals), maxV = Math.max(...vals);
+  return `<div class="meta-row" style="display:flex; justify-content:space-between; gap:6px; margin-top:3px; font-size:11px">
+    <span>${esc(ym(xs[0]))}</span>
+    <span style="color:var(--muted)">範囲 ${esc(fmt(minV))}〜${esc(fmt(maxV))}</span>
+    <span>${esc(ym(xs[xs.length-1]))}</span>
+  </div>`;
+}
+
 function macroCard(s){
   return `<div class="card" data-ind="${esc(s.indicator)}" style="margin:0">
     <h3 style="margin:0 0 2px">${esc(s.country)}</h3>
     <div><span style="font-size:20px;font-weight:700">${esc(s.latest)}</span> <span class="meta-row" style="display:inline">${esc(s.unit)}</span></div>
     <div class="meta-row">最新 ${esc(s.latest_date)}　前年比 ${esc(fmtYoy(s.yoy))}</div>
     ${lineChartSVG([{points:s.history}])}
+    ${chartCaption([{points:s.history}])}
   </div>`;
 }
 
@@ -325,12 +341,14 @@ function renderMoneyFlow(){
       <h3>マネーサプライ(M2) 前年比 ── 主要国比較</h3>
       ${legendHTML(m2lines)}
       ${lineChartSVG(m2lines, {h:140})}
+      ${chartCaption(m2lines)}
       <div class="meta-row">最新前年比: ${m2.map(s => `${esc(s.country)} ${esc(fmtYoy(s.yoy))}`).join('　') || '—'}</div>
     </div>
     <div class="card">
       <h3>中銀バランスシート ── 起点=100で比較（拡大/縮小）</h3>
       ${legendHTML(bslines)}
       ${lineChartSVG(bslines, {h:140})}
+      ${chartCaption(bslines)}
     </div>
     <div class="card">
       <h3>金利</h3>
