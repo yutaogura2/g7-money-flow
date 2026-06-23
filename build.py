@@ -83,11 +83,24 @@ def build_macro_payload(config_path=None, data_dir=None, points=None) -> dict:
         if not rows:
             continue
         d, v, y = rows[-1]
+        values = [r[1] for r in rows]
+        stats = _series_stats(values)
+        zscore = stats["zscore"]
+        std = stats["std"]
+        risk_dir = s.get("risk_dir")
+        stress = (zscore if risk_dir == "high" else -zscore) if risk_dir else None
+        yy, mm, dd = (int(x) for x in d.split("-"))
+        target = (date(yy, mm, dd) - timedelta(days=30)).isoformat()
+        prev = _value_on_or_before(rows, target)
+        delta = round(v - prev, 4) if prev is not None else 0.0
+        delta_z = round((v - prev) / std, 2) if (prev is not None and std) else 0.0
         series.append({
             "id": s["id"], "country": s["country"], "indicator": s["indicator"],
             "unit": s.get("unit", ""),
             "group": s.get("group", "fundamental"),
             "latest": v, "latest_date": d, "yoy": y,
+            "zscore": zscore, "pctile": stats["pctile"], "stress": stress,
+            "delta": delta, "delta_z": delta_z,
             "history": [[r[0], r[1]] for r in rows][-pts:],
             "history_yoy": [[r[0], r[2]] for r in rows if r[2] is not None][-pts:],
         })

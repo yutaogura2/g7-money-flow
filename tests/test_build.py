@@ -143,3 +143,22 @@ def test_value_on_or_before():
     assert build._value_on_or_before(rows, "2026-05-15") == 2.0
     assert build._value_on_or_before(rows, "2026-06-01") == 3.0
     assert build._value_on_or_before(rows, "2026-03-01") is None
+
+
+def test_payload_zscore_stress_delta(tmp_path):
+    (tmp_path / "macro_data").mkdir()
+    (tmp_path / "macro_data" / "X.csv").write_text(
+        "date,value\n2026-01-01,1\n2026-02-01,2\n2026-03-01,3\n2026-04-01,4\n2026-06-01,5\n",
+        encoding="utf-8")
+    (tmp_path / "series_config.json").write_text(json.dumps({
+        "history_points": 180, "series": [
+            {"id": "X", "country": "c", "indicator": "i", "unit": "u",
+             "transform": "level", "risk_dir": "high"}]}), encoding="utf-8")
+    p = build.build_macro_payload(
+        config_path=tmp_path / "series_config.json", data_dir=tmp_path / "macro_data")
+    s = p["series"][0]
+    assert s["pctile"] == 100
+    assert abs(s["zscore"] - 1.41) < 0.01
+    assert abs(s["stress"] - 1.41) < 0.01            # high → +z
+    assert s["delta"] == 1.0                          # 06-01の約30日前=04-01の4 → 5-4
+    assert s["delta_z"] != 0.0
