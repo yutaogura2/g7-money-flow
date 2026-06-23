@@ -135,3 +135,16 @@ def test_run_handles_ecb_source(tmp_path):
     txt = (tmp_path / "ECB_M2_EUR.csv").read_text(encoding="utf-8")
     assert txt.startswith("date,value,yoy_pct")
     assert "10.0" in txt  # YoY +10%
+
+
+def test_run_skips_manual_source(tmp_path):
+    existing = "date,value,yoy_pct\n2026-04-01,1259.0,1.5\n"
+    (tmp_path / "JP_M2_MANUAL.csv").write_text(existing, encoding="utf-8")
+    cfg = {"series": [{"id": "JP_M2_MANUAL", "source": "manual", "transform": "yoy_pct_also"}]}
+    def boom_fred(sid, key): raise AssertionError("manualはfetchしないはず")
+    def boom_ecb(key): raise AssertionError("manualはfetchしないはず")
+    res = fetch_macro.run(cfg, "key", fetcher=boom_fred, ecb_fetcher=boom_ecb, data_dir=tmp_path)
+    assert res["skipped"] == ["JP_M2_MANUAL"]
+    assert res["ok"] == [] and res["failed"] == []
+    # 既存の手動CSVが上書きされていない
+    assert (tmp_path / "JP_M2_MANUAL.csv").read_text(encoding="utf-8") == existing

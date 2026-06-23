@@ -136,9 +136,12 @@ def get_rows(series: dict, api_key: str, *, fred_fetcher, ecb_fetcher) -> list:
 def run(config: dict, api_key: str, fetcher=fetch_series, ecb_fetcher=None, data_dir: Path = MACRO_DIR) -> dict:
     if ecb_fetcher is None:
         ecb_fetcher = fetch_ecb_series
-    ok, failed = [], []
+    ok, failed, skipped = [], [], []
     for s in config.get("series", []):
         sid = s["id"]
+        if s.get("source") == "manual":
+            skipped.append(sid)            # 手動採録: 取得も上書きもしない
+            continue
         with_yoy = s.get("transform") == "yoy_pct_also"
         try:
             rows = get_rows(s, api_key, fred_fetcher=fetcher, ecb_fetcher=ecb_fetcher)
@@ -150,7 +153,7 @@ def run(config: dict, api_key: str, fetcher=fetch_series, ecb_fetcher=None, data
             ok.append(sid)
         except Exception as e:  # noqa: BLE001  個別失敗はスキップして継続
             failed.append((sid, str(e)))
-    return {"ok": ok, "failed": failed}
+    return {"ok": ok, "failed": failed, "skipped": skipped}
 
 
 def main() -> int:
@@ -158,6 +161,8 @@ def main() -> int:
     api_key = load_api_key()
     res = run(config, api_key)
     print(f"OK: {len(res['ok'])} series 取得")
+    if res.get("skipped"):
+        print(f"  手動(スキップ): {', '.join(res['skipped'])}")
     for sid, err in res["failed"]:
         print(f"  未取得 {sid}: {err}", file=sys.stderr)
     return 0
