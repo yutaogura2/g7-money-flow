@@ -17,6 +17,7 @@
     { "id": "CP0000EZ19M086NEST", "country": "ユーロ圏", "indicator": "CPI", "unit": "指数", "transform": "yoy_pct_also" },
     { "id": "ECB_M2_EUR", "country": "ユーロ圏", "indicator": "マネーサプライ(M2)", "unit": "百万ユーロ", "transform": "yoy_pct_also", "source": "ecb", "ecb_key": "BSI/M.U2.Y.V.M20.X.1.U2.2300.Z01.E" },
     { "id": "ECB_M3_EUR", "country": "ユーロ圏", "indicator": "マネーサプライ(M3)", "unit": "百万ユーロ", "transform": "yoy_pct_also", "source": "ecb", "ecb_key": "BSI/M.U2.Y.V.M30.X.1.U2.2300.Z01.E" },
+    { "id": "JP_M2_BOJ", "country": "日本", "indicator": "マネーサプライ(M2)", "unit": "兆円", "transform": "yoy_pct_also", "source": "boj" },
     { "id": "JPNASSETS", "country": "日本", "indicator": "中銀バランスシート", "unit": "億円", "transform": "level" },
     { "id": "IRLTLT01JPM156N", "country": "日本", "indicator": "10年国債利回り", "unit": "%", "transform": "level" },
     { "id": "LRUNTTTTJPM156S", "country": "日本", "indicator": "失業率", "unit": "%", "transform": "level" },
