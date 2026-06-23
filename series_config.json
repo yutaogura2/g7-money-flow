@@ -1,0 +1,31 @@
+{
+  "history_start": "2000-01-01",
+  "history_points": 180,
+  "series": [
+    { "id": "M2SL", "country": "米国", "indicator": "マネーサプライ(M2)", "unit": "10億ドル", "transform": "yoy_pct_also" },
+    { "id": "WALCL", "country": "米国", "indicator": "中銀バランスシート", "unit": "百万ドル", "transform": "level" },
+    { "id": "FEDFUNDS", "country": "米国", "indicator": "政策金利", "unit": "%", "transform": "level" },
+    { "id": "DGS10", "country": "米国", "indicator": "10年国債利回り", "unit": "%", "transform": "level" },
+    { "id": "CPIAUCSL", "country": "米国", "indicator": "CPI", "unit": "指数", "transform": "yoy_pct_also" },
+    { "id": "CPILFESL", "country": "米国", "indicator": "コアCPI", "unit": "指数", "transform": "yoy_pct_also" },
+    { "id": "GDPC1", "country": "米国", "indicator": "実質GDP", "unit": "10億ドル", "transform": "yoy_pct_also" },
+    { "id": "UNRATE", "country": "米国", "indicator": "失業率", "unit": "%", "transform": "level" },
+    { "id": "MYAGM2EZM196N", "country": "ユーロ圏", "indicator": "マネーサプライ(M2)", "unit": "指数", "transform": "yoy_pct_also" },
+    { "id": "ECBASSETSW", "country": "ユーロ圏", "indicator": "中銀バランスシート", "unit": "百万ユーロ", "transform": "level" },
+    { "id": "ECBDFR", "country": "ユーロ圏", "indicator": "政策金利", "unit": "%", "transform": "level" },
+    { "id": "IRLTLT01DEM156N", "country": "ユーロ圏", "indicator": "10年国債利回り", "unit": "%", "transform": "level" },
+    { "id": "CP0000EZ19M086NEST", "country": "ユーロ圏", "indicator": "CPI", "unit": "指数", "transform": "yoy_pct_also" },
+    { "id": "MYAGM2JPM189S", "country": "日本", "indicator": "マネーサプライ(M2)", "unit": "円", "transform": "yoy_pct_also" },
+    { "id": "JPNASSETS", "country": "日本", "indicator": "中銀バランスシート", "unit": "億円", "transform": "level" },
+    { "id": "IRLTLT01JPM156N", "country": "日本", "indicator": "10年国債利回り", "unit": "%", "transform": "level" },
+    { "id": "JPNCPIALLMINMEI", "country": "日本", "indicator": "CPI", "unit": "指数", "transform": "yoy_pct_also" },
+    { "id": "LRUNTTTTJPM156S", "country": "日本", "indicator": "失業率", "unit": "%", "transform": "level" },
+    { "id": "MABMM201GBM189S", "country": "英国", "indicator": "マネーサプライ(M2)", "unit": "ポンド", "transform": "yoy_pct_also" },
+    { "id": "IRLTLT01GBM156N", "country": "英国", "indicator": "10年国債利回り", "unit": "%", "transform": "level" },
+    { "id": "GBRCPIALLMINMEI", "country": "英国", "indicator": "CPI", "unit": "指数", "transform": "yoy_pct_also" },
+    { "id": "MYAGM2CNM189N", "country": "中国", "indicator": "マネーサプライ(M2)", "unit": "元", "transform": "yoy_pct_also" },
+    { "id": "CHNCPIALLMINMEI", "country": "中国", "indicator": "CPI", "unit": "指数", "transform": "yoy_pct_also" },
+    { "id": "IRLTLT01CAM156N", "country": "カナダ", "indicator": "10年国債利回り", "unit": "%", "transform": "level" },
+    { "id": "CANCPIALLMINMEI", "country": "カナダ", "indicator": "CPI", "unit": "指数", "transform": "yoy_pct_also" }
+  ]
+}

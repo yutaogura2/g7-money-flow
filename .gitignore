@@ -9,3 +9,6 @@ __pycache__/
 
 # ローカル設定
 .claude/settings.local.json
+
+# FRED APIキー（秘密：コミットしない）
+fred_api_key.txt
