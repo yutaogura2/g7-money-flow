@@ -3,6 +3,8 @@
 """FRED からマクロ時系列を取得し macro_data/*.csv を生成する。"""
 import json
 import sys
+import urllib.parse
+import urllib.request
 from datetime import date
 from pathlib import Path
 
@@ -83,3 +85,41 @@ def write_series_csv(series_id: str, rows: list, with_yoy: bool, data_dir: Path 
     fp = p / f"{series_id}.csv"
     fp.write_text(to_csv_text(rows, with_yoy), encoding="utf-8")
     return fp
+
+
+def fetch_series(series_id: str, api_key: str, urlopen=urllib.request.urlopen) -> dict:
+    q = urllib.parse.urlencode({"series_id": series_id, "api_key": api_key, "file_type": "json"})
+    with urlopen(f"{FRED_URL}?{q}", timeout=30) as r:
+        return json.loads(r.read().decode("utf-8"))
+
+
+def run(config: dict, api_key: str, fetcher=fetch_series, data_dir: Path = MACRO_DIR) -> dict:
+    ok, failed = [], []
+    for s in config.get("series", []):
+        sid = s["id"]
+        with_yoy = s.get("transform") == "yoy_pct_also"
+        try:
+            rows = parse_observations(fetcher(sid, api_key))
+            if not rows:
+                failed.append((sid, "観測値なし"))
+                continue
+            out = compute_yoy(rows) if with_yoy else rows
+            write_series_csv(sid, out, with_yoy, data_dir)
+            ok.append(sid)
+        except Exception as e:  # noqa: BLE001  個別失敗はスキップして継続
+            failed.append((sid, str(e)))
+    return {"ok": ok, "failed": failed}
+
+
+def main() -> int:
+    config = load_config()
+    api_key = load_api_key()
+    res = run(config, api_key)
+    print(f"OK: {len(res['ok'])} series 取得")
+    for sid, err in res["failed"]:
+        print(f"  未取得 {sid}: {err}", file=sys.stderr)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

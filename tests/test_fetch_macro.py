@@ -54,3 +54,29 @@ def test_write_series_csv(tmp_path):
     fp = fetch_macro.write_series_csv("X", [("2020-01-01", 1.0)], False, data_dir=tmp_path)
     assert fp.exists()
     assert fp.read_text(encoding="utf-8") == "date,value\n2020-01-01,1.0\n"
+
+
+def test_run_writes_ok_and_skips_failures(tmp_path):
+    cfg = {"series": [
+        {"id": "GOOD", "transform": "yoy_pct_also"},
+        {"id": "BAD", "transform": "level"},
+        {"id": "EMPTY", "transform": "level"},
+    ]}
+
+    def fake_fetcher(sid, key):
+        if sid == "GOOD":
+            return {"observations": [
+                {"date": "2020-01-01", "value": "100"},
+                {"date": "2021-01-01", "value": "110"},
+            ]}
+        if sid == "EMPTY":
+            return {"observations": []}
+        raise RuntimeError("boom")
+
+    res = fetch_macro.run(cfg, "key", fetcher=fake_fetcher, data_dir=tmp_path)
+    assert res["ok"] == ["GOOD"]
+    failed_ids = [f[0] for f in res["failed"]]
+    assert "BAD" in failed_ids and "EMPTY" in failed_ids
+    good = (tmp_path / "GOOD.csv").read_text(encoding="utf-8")
+    assert good.startswith("date,value,yoy_pct")
+    assert "10.0" in good  # YoY が計算されている
