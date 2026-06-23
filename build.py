@@ -159,6 +159,20 @@ def build_xlsx(data: dict, path: Path = XLSX) -> None:
                 ws3.append([m.get("date", ""), label, text, m.get("id", "")])
     _style_header(ws3)
 
+    macro = data.get("macro", {}).get("series", [])
+    ws4 = wb.create_sheet("マクロ_最新")
+    ws4.append(["国", "指標", "最新値", "日付", "前年比%", "単位"])
+    for s in macro:
+        ws4.append([s["country"], s["indicator"], s["latest"], s["latest_date"],
+                    "" if s.get("yoy") is None else s["yoy"], s.get("unit", "")])
+    _style_header(ws4)
+
+    ws5 = wb.create_sheet("マクロ_時系列")
+    ws5.append(["日付", "国", "指標", "値", "前年比%"])
+    for d, country, ind, v, y in macro_timeseries_rows():
+        ws5.append([d, country, ind, v, "" if y is None else y])
+    _style_header(ws5)
+
     for ws in wb.worksheets:
         for col in range(1, ws.max_column + 1):
             ws.column_dimensions[get_column_letter(col)].width = 24

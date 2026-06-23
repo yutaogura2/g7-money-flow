@@ -55,7 +55,7 @@ def test_build_xlsx_sheets_and_rows(tmp_path, sample_json):
     out = tmp_path / "out.xlsx"
     build.build_xlsx(data, out)
     wb = load_workbook(out)
-    assert wb.sheetnames == ["会議ログ", "カレンダー", "考察サマリ"]
+    assert wb.sheetnames == ["会議ログ", "カレンダー", "考察サマリ", "マクロ_最新", "マクロ_時系列"]
     assert wb["会議ログ"].max_row == 2       # ヘッダ + 1会議
     assert wb["カレンダー"].max_row == 2      # ヘッダ + 1イベント
     assert wb["考察サマリ"].max_row == 5      # ヘッダ + 4観点
@@ -103,3 +103,20 @@ def test_macro_timeseries_rows(tmp_path):
     rows = build.macro_timeseries_rows(
         config_path=tmp_path / "series_config.json", data_dir=tmp_path / "macro_data")
     assert ("2020-01-01", "米国", "マネーサプライ(M2)", 110.0, 10.0) in rows
+
+
+def test_build_xlsx_includes_macro_sheets(tmp_path, sample_json, monkeypatch):
+    _write_macro_fixture(tmp_path)
+    monkeypatch.setattr(build, "SERIES_CONFIG", tmp_path / "series_config.json")
+    monkeypatch.setattr(build, "MACRO_DIR", tmp_path / "macro_data")
+    data = build.load_data(sample_json)
+    data["macro"] = build.build_macro_payload(
+        config_path=tmp_path / "series_config.json", data_dir=tmp_path / "macro_data")
+    out = tmp_path / "out.xlsx"
+    build.build_xlsx(data, out)
+    wb = load_workbook(out)
+    assert "マクロ_最新" in wb.sheetnames
+    assert "マクロ_時系列" in wb.sheetnames
+    assert wb["マクロ_最新"].cell(row=1, column=1).value == "国"
+    assert wb["マクロ_最新"].max_row == 2          # ヘッダ + 1シリーズ
+    assert wb["マクロ_時系列"].max_row == 3         # ヘッダ + 2行
