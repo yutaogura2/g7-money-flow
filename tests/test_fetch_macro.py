@@ -276,3 +276,14 @@ def test_fetch_real_m2_uses_m2_and_cpi():
         return {"observations": data}
     rows = fetch_macro.fetch_real_m2("key", fred_fetcher=fred)
     assert rows == [("2026-04-01", 6875.0)]
+
+
+def test_run_handles_cftc_source(tmp_path):
+    cfg = {"series": [{"id": "COT_GOLD", "source": "cftc",
+                       "cftc_market": "GOLD - X", "transform": "level"}]}
+    def fake_cftc(market):
+        return [("2026-06-09", 180000.0), ("2026-06-16", 180220.0)]
+    res = fetch_macro.run(cfg, "key", cftc_fetcher=fake_cftc, data_dir=tmp_path)
+    assert res["ok"] == ["COT_GOLD"]
+    txt = (tmp_path / "COT_GOLD.csv").read_text(encoding="utf-8")
+    assert "180220" in txt

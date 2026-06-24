@@ -257,18 +257,20 @@ def computed_dispatch(series: dict, api_key: str, fred_fetcher=fetch_series) -> 
     raise ValueError(f"unknown compute: {c}")
 
 
-def get_rows(series: dict, api_key: str, *, fred_fetcher, ecb_fetcher, boj_fetcher=None, computed_fetcher=None) -> list:
+def get_rows(series: dict, api_key: str, *, fred_fetcher, ecb_fetcher, boj_fetcher=None, computed_fetcher=None, cftc_fetcher=None) -> list:
     src = series.get("source")
     if src == "ecb":
         return ecb_fetcher(series["ecb_key"])
     if src == "boj":
         return boj_fetcher()
+    if src == "cftc":
+        return (cftc_fetcher or fetch_cftc)(series["cftc_market"])
     if src == "computed":
         return (computed_fetcher or computed_dispatch)(series, api_key, fred_fetcher)
     return parse_observations(fred_fetcher(series["id"], api_key))
 
 
-def run(config: dict, api_key: str, fetcher=fetch_series, ecb_fetcher=None, boj_fetcher=None, computed_fetcher=None, data_dir: Path = MACRO_DIR) -> dict:
+def run(config: dict, api_key: str, fetcher=fetch_series, ecb_fetcher=None, boj_fetcher=None, computed_fetcher=None, cftc_fetcher=None, data_dir: Path = MACRO_DIR) -> dict:
     if ecb_fetcher is None:
         ecb_fetcher = fetch_ecb_series
     if boj_fetcher is None:
@@ -281,7 +283,7 @@ def run(config: dict, api_key: str, fetcher=fetch_series, ecb_fetcher=None, boj_
             continue
         with_yoy = s.get("transform") == "yoy_pct_also"
         try:
-            rows = get_rows(s, api_key, fred_fetcher=fetcher, ecb_fetcher=ecb_fetcher, boj_fetcher=boj_fetcher, computed_fetcher=computed_fetcher)
+            rows = get_rows(s, api_key, fred_fetcher=fetcher, ecb_fetcher=ecb_fetcher, boj_fetcher=boj_fetcher, computed_fetcher=computed_fetcher, cftc_fetcher=cftc_fetcher)
             if not rows:
                 failed.append((sid, "観測値なし"))
                 continue
