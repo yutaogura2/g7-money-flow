@@ -19,6 +19,7 @@ FRED_URL = "https://api.stlouisfed.org/fred/series/observations"
 ECB_URL = "https://data-api.ecb.europa.eu/service/data"
 BOJ_M2_CSV = "https://www.stat-search.boj.or.jp/ssi/mtshtml/csv/md02_m_1.csv"
 BOJ_M2_CODE = "MD02'MAM1NAM2M2MO"   # マネーストック M2 平均残高(億円)
+CFTC_URL = "https://publicreporting.cftc.gov/resource/6dca-aqww.json"
 
 
 def load_config(path: Path = SERIES_CONFIG) -> dict:
@@ -160,6 +161,35 @@ def fetch_boj_m2(url: str = BOJ_M2_CSV, urlopen=urllib.request.urlopen) -> list:
     with urlopen(req, timeout=30) as r:
         raw = r.read()
     return _parse_boj_m2_csv(raw.decode("cp932"))
+
+
+def _parse_cftc_rows(records: list) -> list:
+    out = []
+    for r in records:
+        d = (r.get("report_date_as_yyyy_mm_dd") or "")[:10]
+        if not d:
+            continue
+        try:
+            net = float(r.get("noncomm_positions_long_all")) - float(r.get("noncomm_positions_short_all"))
+        except (TypeError, ValueError):
+            continue
+        out.append((d, net))
+    out.sort(key=lambda x: x[0])
+    return out
+
+
+def fetch_cftc(market_name: str, urlopen=urllib.request.urlopen) -> list:
+    params = {
+        "$select": "report_date_as_yyyy_mm_dd,noncomm_positions_long_all,noncomm_positions_short_all",
+        "$where": f"market_and_exchange_names='{market_name}'",
+        "$order": "report_date_as_yyyy_mm_dd ASC",
+        "$limit": "20000",
+    }
+    url = CFTC_URL + "?" + urllib.parse.urlencode(params)
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"})
+    with urlopen(req, timeout=60) as r:
+        records = json.loads(r.read().decode("utf-8"))
+    return _parse_cftc_rows(records)
 
 
 def _nearest_prior(pairs: list, target: str):

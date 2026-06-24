@@ -231,3 +231,32 @@ def test_run_handles_computed_source(tmp_path):
     txt = (tmp_path / "NETLIQ_US.csv").read_text(encoding="utf-8")
     assert txt.startswith("date,value,yoy_pct")
     assert "2026-06-17" in txt
+
+
+def test_parse_cftc_rows_net_and_sort():
+    recs = [
+        {"report_date_as_yyyy_mm_dd": "2026-06-16T00:00:00.000",
+         "noncomm_positions_long_all": "250000", "noncomm_positions_short_all": "69780"},
+        {"report_date_as_yyyy_mm_dd": "2026-06-09T00:00:00.000",
+         "noncomm_positions_long_all": "240000", "noncomm_positions_short_all": "60000"},
+    ]
+    out = fetch_macro._parse_cftc_rows(recs)
+    assert out == [("2026-06-09", 180000.0), ("2026-06-16", 180220.0)]
+
+
+def test_fetch_cftc_builds_query_and_parses():
+    import urllib.parse
+    captured = {}
+    body = ('[{"report_date_as_yyyy_mm_dd":"2026-06-16T00:00:00.000",'
+            '"noncomm_positions_long_all":"250000","noncomm_positions_short_all":"69780"}]')
+    class _R:
+        def read(self): return body.encode("utf-8")
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+    def fake_urlopen(req, timeout=60):
+        captured["url"] = req.full_url
+        return _R()
+    rows = fetch_macro.fetch_cftc("GOLD - COMMODITY EXCHANGE INC.", urlopen=fake_urlopen)
+    assert "publicreporting.cftc.gov" in captured["url"]
+    assert "GOLD" in urllib.parse.unquote(captured["url"])
+    assert rows == [("2026-06-16", 180220.0)]
