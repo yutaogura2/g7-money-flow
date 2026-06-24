@@ -223,10 +223,38 @@ def fetch_netliq(api_key, fred_fetcher=fetch_series) -> list:
     return compute_netliq(walcl, tga, rrp)
 
 
+def _deflate(nominal: list, cpi: list) -> list:
+    cpi_s = sorted(cpi)
+    out = []
+    for d, v in sorted(nominal):
+        c = _nearest_prior(cpi_s, d)
+        if c is None or c == 0:
+            continue
+        out.append((d, round(v / (c / 100.0), 4)))
+    return out
+
+
+def fetch_real_m2(api_key, fred_fetcher=fetch_series) -> list:
+    m2 = parse_observations(fred_fetcher("M2SL", api_key))
+    cpi = parse_observations(fred_fetcher("CPIAUCSL", api_key))
+    return _deflate(m2, cpi)
+
+
+def fetch_real_netliq(api_key, fred_fetcher=fetch_series) -> list:
+    netliq = fetch_netliq(api_key, fred_fetcher)
+    cpi = parse_observations(fred_fetcher("CPIAUCSL", api_key))
+    return _deflate(netliq, cpi)
+
+
 def computed_dispatch(series: dict, api_key: str, fred_fetcher=fetch_series) -> list:
-    if series.get("compute") == "netliq_us":
+    c = series.get("compute")
+    if c == "netliq_us":
         return fetch_netliq(api_key, fred_fetcher)
-    raise ValueError(f"unknown compute: {series.get('compute')}")
+    if c == "real_m2":
+        return fetch_real_m2(api_key, fred_fetcher)
+    if c == "real_netliq":
+        return fetch_real_netliq(api_key, fred_fetcher)
+    raise ValueError(f"unknown compute: {c}")
 
 
 def get_rows(series: dict, api_key: str, *, fred_fetcher, ecb_fetcher, boj_fetcher=None, computed_fetcher=None) -> list:

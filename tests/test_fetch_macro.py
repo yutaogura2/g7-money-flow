@@ -260,3 +260,19 @@ def test_fetch_cftc_builds_query_and_parses():
     assert "publicreporting.cftc.gov" in captured["url"]
     assert "GOLD" in urllib.parse.unquote(captured["url"])
     assert rows == [("2026-06-16", 180220.0)]
+
+
+def test_deflate_real():
+    nominal = [("2026-03-01", 21000.0), ("2026-04-01", 22000.0)]
+    cpi = [("2026-03-01", 310.0), ("2026-04-01", 320.0)]
+    out = fetch_macro._deflate(nominal, cpi)
+    assert out[-1] == ("2026-04-01", 6875.0)   # 22000/(320/100)
+
+
+def test_fetch_real_m2_uses_m2_and_cpi():
+    def fred(sid, key):
+        data = {"M2SL": [{"date": "2026-04-01", "value": "22000"}],
+                "CPIAUCSL": [{"date": "2026-04-01", "value": "320"}]}[sid]
+        return {"observations": data}
+    rows = fetch_macro.fetch_real_m2("key", fred_fetcher=fred)
+    assert rows == [("2026-04-01", 6875.0)]
