@@ -80,20 +80,12 @@ function renderOverview(){
   const tags = {};
   meetings.forEach(m => (m.tags||[]).forEach(t => tags[t]=(tags[t]||0)+1));
   const topTags = Object.entries(tags).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  const sig = (DATA.macro && DATA.macro.signals) || {};
-  const regime = sig.regime || {};
-  const regimeColor = regime.level==='warn' ? '#ff5a5a' : (regime.level==='calm' ? '#4fd08c' : '#9fb2cf');
-  const movers = sig.movers || [];
+  const brief = (DATA.macro && DATA.macro.briefing) || { lines: [] };
 
   el.innerHTML = `
     <div class="card">
-      <h3>リスクレジーム</h3>
-      <div style="font-size:22px; font-weight:700; color:${regimeColor}">${esc(regime.label || '—')}</div>
-      <div class="meta-row">総合スコア ${esc(regime.score==null ? '—' : regime.score)}（高いほどリスクオフ）</div>
-    </div>
-    <div class="card">
-      <h3>直近の主な変化</h3>
-      ${movers.map(m => `<div class="meta-row">${m.dir==='up'?'▲':'▼'} ${esc(m.indicator)}・${esc(m.country)} … Δz ${esc(m.delta_z)}（最新 ${esc(m.latest)}）</div>`).join('') || '<div class="meta-row">—</div>'}
+      <h3>週次ブリーフィング <span class="meta-row" style="display:inline">${esc(brief.as_of || '')}</span></h3>
+      ${(brief.lines || []).map(l => `<div class="meta-row" style="font-size:13px; margin-bottom:4px">${esc(l)}</div>`).join('') || '<div class="meta-row">—</div>'}
     </div>
     <div class="kpi">
       <div class="box"><div class="num">${meetings.length}</div><div class="lbl">登録済み会議・声明</div></div>
@@ -297,6 +289,7 @@ function macroCard(s){
     <div><span style="font-size:20px;font-weight:700">${esc(s.latest)}</span> <span class="meta-row" style="display:inline">${esc(s.unit)}</span></div>
     <div class="meta-row">最新 ${esc(s.latest_date)}　前年比 ${esc(fmtYoy(s.yoy))}</div>
     ${signalBadge(s)}
+    ${s.stale ? `<div class="meta-row" style="color:#ffb74f">⚠ データ古い (${esc(s.stale_days)}日)</div>` : ''}
     ${lineChartSVG([{points:s.history}])}
     ${chartCaption([{points:s.history}])}
   </div>`;
