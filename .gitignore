@@ -1,5 +1,5 @@
 # 生成物（build.py で data.json から再生成可能）
-data.js
+# data.js はGitHub Pages公開用に追跡する（build後にコミットで更新）
 G7_一次情報ログ.xlsx
 
 # Python
