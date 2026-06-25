@@ -196,3 +196,34 @@ def test_staleness_monthly_and_quarterly():
     quarterly = [("2025-09-01", 1.0, None), ("2025-12-01", 1.0, None), ("2026-03-01", 1.0, None)]
     assert build._staleness(quarterly, _date(2026, 6, 5))[1] is False  # ~96日 < 91*2.5+7
     assert build._staleness([("2026-01-01", 1.0, None)], _date(2026, 6, 5)) == (0, False)
+
+
+def test_build_briefing_lines():
+    series = [
+        {"indicator": "ボラティリティ", "country": "VIX", "zscore": 2.5, "stale": False, "stale_days": 3},
+        {"indicator": "建玉(COT)", "country": "円", "zscore": -2.18, "stale": False, "stale_days": 9},
+        {"indicator": "CPI", "country": "米国", "zscore": 0.3, "stale": True, "stale_days": 400},
+    ]
+    signals = {"regime": {"label": "リスクオフ", "score": 0.6, "level": "warn"},
+               "movers": [{"indicator": "商品", "country": "WTI原油", "delta_z": -1.2, "dir": "down"}]}
+    b = build.build_briefing(series, signals, "2026-06-25")
+    text = " ".join(b["lines"])
+    assert b["as_of"] == "2026-06-25"
+    assert "リスクオフ" in text
+    assert "極端な水準" in text and "VIX" in text
+    assert "ポジション偏り" in text and "円" in text
+    assert "⚠" in text and "CPI" in text
+
+
+def test_write_briefing_md(tmp_path):
+    p = tmp_path / "b.md"
+    build.write_briefing_md({"as_of": "2026-06-25", "lines": ["a", "b"]}, path=p)
+    t = p.read_text(encoding="utf-8")
+    assert "週次ブリーフィング 2026-06-25" in t and "- a" in t
+
+
+def test_payload_includes_briefing(tmp_path):
+    _write_macro_fixture(tmp_path)
+    p = build.build_macro_payload(
+        config_path=tmp_path / "series_config.json", data_dir=tmp_path / "macro_data")
+    assert "briefing" in p and "lines" in p["briefing"]

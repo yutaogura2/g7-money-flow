@@ -99,6 +99,37 @@ def build_signals(series: list) -> dict:
     return {"regime": {"score": score, "label": label, "level": level}, "movers": movers}
 
 
+def build_briefing(series: list, signals: dict, as_of: str) -> dict:
+    lines = []
+    reg = signals.get("regime", {})
+    lines.append(f"リスクレジーム: {reg.get('label', '—')} (総合スコア {reg.get('score')})")
+    movers = signals.get("movers", [])[:5]
+    if movers:
+        parts = [f"{'▲' if m['dir'] == 'up' else '▼'}{m['indicator']}・{m['country']}(Δz {m['delta_z']})" for m in movers]
+        lines.append("直近の主な変化: " + " / ".join(parts))
+    ext = sorted([s for s in series if s.get("zscore") is not None and abs(s["zscore"]) >= 2],
+                 key=lambda s: abs(s["zscore"]), reverse=True)
+    if ext:
+        parts = [f"{s['indicator']}・{s['country']} z{s['zscore']}({'高' if s['zscore'] > 0 else '低'})" for s in ext]
+        lines.append("極端な水準(|Z|≥2): " + " / ".join(parts))
+    pos = sorted([s for s in series if s.get("indicator") == "建玉(COT)" and s.get("zscore") is not None and abs(s["zscore"]) >= 1.5],
+                 key=lambda s: abs(s["zscore"]), reverse=True)
+    if pos:
+        parts = [f"{s['country']} z{s['zscore']}({'買い過熱' if s['zscore'] > 0 else '売り過熱'})" for s in pos]
+        lines.append("ポジション偏り(建玉|Z|≥1.5): " + " / ".join(parts))
+    stale = [s for s in series if s.get("stale")]
+    if stale:
+        lines.append("データ鮮度: ⚠ " + " / ".join(f"{s['indicator']}・{s['country']}({s['stale_days']}日)" for s in stale))
+    else:
+        lines.append("データ鮮度: 異常なし")
+    return {"as_of": as_of, "lines": lines}
+
+
+def write_briefing_md(briefing: dict, path: Path = ROOT / "週次ブリーフィング.md") -> None:
+    md = f"# 週次ブリーフィング {briefing['as_of']}\n\n" + "\n".join(f"- {ln}" for ln in briefing["lines"]) + "\n"
+    Path(path).write_text(md, encoding="utf-8")
+
+
 def build_macro_payload(config_path=None, data_dir=None, points=None) -> dict:
     config_path = config_path or SERIES_CONFIG      # 呼び出し時に解決（monkeypatch対応）
     data_dir = data_dir or MACRO_DIR
@@ -138,7 +169,9 @@ def build_macro_payload(config_path=None, data_dir=None, points=None) -> dict:
             "history": [[r[0], r[1]] for r in rows][-pts:],
             "history_yoy": [[r[0], r[2]] for r in rows if r[2] is not None][-pts:],
         })
-    return {"series": series, "signals": build_signals(series)}
+    signals = build_signals(series)
+    briefing = build_briefing(series, signals, date.today().isoformat())
+    return {"series": series, "signals": signals, "briefing": briefing}
 
 
 def macro_timeseries_rows(config_path=None, data_dir=None) -> list:
@@ -255,6 +288,7 @@ def build_xlsx(data: dict, path: Path = XLSX) -> None:
 def main() -> int:
     data = load_data()
     data["macro"] = build_macro_payload()
+    write_briefing_md(data["macro"]["briefing"])
     write_data_js(data)
     build_xlsx(data)
     print(f"OK: {len(data.get('meetings', []))} meetings, "
