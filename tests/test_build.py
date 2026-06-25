@@ -184,3 +184,15 @@ def test_payload_includes_signals(tmp_path):
         config_path=tmp_path / "series_config.json", data_dir=tmp_path / "macro_data")
     assert "signals" in p
     assert "regime" in p["signals"] and "movers" in p["signals"]
+
+
+from datetime import date as _date
+
+
+def test_staleness_monthly_and_quarterly():
+    monthly = [(f"2026-{m:02d}-01", 1.0, None) for m in range(1, 6)]  # Jan..May
+    assert build._staleness(monthly, _date(2026, 6, 5))[1] is False   # ~35日
+    assert build._staleness(monthly, _date(2026, 10, 1))[1] is True   # ~153日
+    quarterly = [("2025-09-01", 1.0, None), ("2025-12-01", 1.0, None), ("2026-03-01", 1.0, None)]
+    assert build._staleness(quarterly, _date(2026, 6, 5))[1] is False  # ~96日 < 91*2.5+7
+    assert build._staleness([("2026-01-01", 1.0, None)], _date(2026, 6, 5)) == (0, False)

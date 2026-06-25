@@ -67,6 +67,17 @@ def _value_on_or_before(rows: list, target: str):
     return val
 
 
+def _staleness(rows: list, today: date) -> tuple:
+    dates = [r[0] for r in rows]
+    if len(dates) < 2:
+        return (0, False)
+    ds = [date.fromisoformat(x) for x in dates[-13:]]
+    gaps = sorted(g for g in ((ds[i] - ds[i - 1]).days for i in range(1, len(ds))) if g > 0)
+    med = gaps[len(gaps) // 2] if gaps else 30
+    stale_days = (today - date.fromisoformat(dates[-1])).days
+    return (stale_days, stale_days > med * 2.5 + 7)
+
+
 def build_signals(series: list) -> dict:
     stresses = [s["stress"] for s in series if s.get("stress") is not None]
     if stresses:
@@ -115,6 +126,7 @@ def build_macro_payload(config_path=None, data_dir=None, points=None) -> dict:
         prev = _value_on_or_before(rows, target)
         delta = round(v - prev, 4) if prev is not None else 0.0
         delta_z = round((v - prev) / std, 2) if (prev is not None and std) else 0.0
+        stale_days, stale = _staleness(rows, date.today())
         series.append({
             "id": s["id"], "country": s["country"], "indicator": s["indicator"],
             "unit": s.get("unit", ""),
@@ -122,6 +134,7 @@ def build_macro_payload(config_path=None, data_dir=None, points=None) -> dict:
             "latest": v, "latest_date": d, "yoy": y,
             "zscore": zscore, "pctile": stats["pctile"], "stress": stress,
             "delta": delta, "delta_z": delta_z,
+            "stale_days": stale_days, "stale": stale,
             "history": [[r[0], r[1]] for r in rows][-pts:],
             "history_yoy": [[r[0], r[2]] for r in rows if r[2] is not None][-pts:],
         })
