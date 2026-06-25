@@ -251,7 +251,14 @@ function lineChartSVG(seriesList, opts){
     return `<path d="${d}" fill="none" stroke="${s.color||colors[si%colors.length]}" stroke-width="1.5"/>`;
   }).join('');
   const zero = (minV < 0 && maxV > 0) ? `<line x1="${pad}" y1="${sy(0).toFixed(1)}" x2="${W-pad}" y2="${sy(0).toFixed(1)}" stroke="#3a4a66" stroke-width="0.5"/>` : '';
-  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none">${zero}${paths}</svg>`;
+  const svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none">${zero}${paths}</svg>`;
+  if(seriesList.length === 1){
+    const pts = seriesList[0].points || [];
+    const step = pts.length > 60 ? Math.ceil(pts.length / 60) : 1;
+    const dpts = pts.filter((_, i) => i % step === 0);
+    return `<div class="spark" style="position:relative" data-pts='${JSON.stringify(dpts)}'>${svg}<div class="spark-tip" style="position:absolute; top:0; display:none; background:#0b1424; border:1px solid var(--line); color:var(--txt); font-size:11px; padding:1px 5px; border-radius:4px; pointer-events:none; white-space:nowrap"></div></div>`;
+  }
+  return svg;
 }
 
 function fmtYoy(y){ return (y==null) ? '—' : (y>0?'+':'') + y + '%'; }
@@ -266,6 +273,28 @@ function signalBadge(s){
     flag = ` ・ <span style="color:${c}">● ${lbl}</span>`;
   }
   return `<div class="meta-row">Zスコア ${esc(s.zscore)} ・ ${esc(s.pctile)}%ile${flag}</div>`;
+}
+
+function attachSparkHover(){
+  document.addEventListener('mousemove', e => {
+    const spark = e.target.closest ? e.target.closest('.spark') : null;
+    document.querySelectorAll('.spark-tip').forEach(t => {
+      if(!spark || !spark.contains(t)) t.style.display = 'none';
+    });
+    if(!spark) return;
+    let pts;
+    try { pts = JSON.parse(spark.getAttribute('data-pts') || '[]'); } catch(_){ return; }
+    if(!pts.length) return;
+    const rect = spark.getBoundingClientRect();
+    const frac = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+    const p = pts[Math.round(frac * (pts.length - 1))];
+    const tip = spark.querySelector('.spark-tip');
+    if(tip && p){
+      tip.textContent = `${p[0]}: ${p[1]}`;
+      tip.style.display = 'block';
+      tip.style.left = Math.min(rect.width - 96, Math.max(0, e.clientX - rect.left)) + 'px';
+    }
+  });
 }
 
 function chartCaption(seriesList){
@@ -404,6 +433,7 @@ function init(){
   renderMacro();
   renderMoneyFlow();
   renderMarket();
+  attachSparkHover();
 }
 init();
 </script>
