@@ -20,9 +20,16 @@ def test_load_api_key_reads_and_strips(tmp_path):
     assert fetch_macro.load_api_key(p) == "abcd1234"
 
 
-def test_load_api_key_missing_raises(tmp_path):
+def test_load_api_key_missing_raises(tmp_path, monkeypatch):
+    monkeypatch.delenv("FRED_API_KEY", raising=False)
     with pytest.raises(SystemExit):
         fetch_macro.load_api_key(tmp_path / "nope.txt")
+
+
+def test_load_api_key_prefers_env(tmp_path, monkeypatch):
+    monkeypatch.setenv("FRED_API_KEY", "envkey123")
+    # ファイルが無くても環境変数を使う（CI向け）
+    assert fetch_macro.load_api_key(tmp_path / "nope.txt") == "envkey123"
 
 
 def test_parse_observations_filters_missing_and_sorts():

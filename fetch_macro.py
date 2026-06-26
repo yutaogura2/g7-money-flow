@@ -4,6 +4,7 @@
 import csv
 import io
 import json
+import os
 import re
 import sys
 import urllib.parse
@@ -28,6 +29,9 @@ def load_config(path: Path = SERIES_CONFIG) -> dict:
 
 
 def load_api_key(path: Path = API_KEY_FILE) -> str:
+    env = os.environ.get("FRED_API_KEY")
+    if env and env.strip():
+        return env.strip()   # CI（GitHub Actions Secret）優先
     p = Path(path)
     if not p.exists():
         raise SystemExit(

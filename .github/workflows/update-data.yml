@@ -1,0 +1,49 @@
+name: Weekly data update
+
+# 毎週クラウド上で FRED/ECB/日銀/CFTC を取得して data.js を更新し push。
+# push により GitHub Pages が自動で再ビルドされ、公開サイトが最新化される。
+
+on:
+  schedule:
+    - cron: "0 22 * * 0"   # 毎週日曜 22:00 UTC（= 月曜 7:00 JST）
+  workflow_dispatch: {}     # 手動実行も可
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-data
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Fetch macro data (FRED/ECB/BOJ/CFTC)
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: python fetch_macro.py
+
+      - name: Build dashboard data
+        run: python build.py
+
+      - name: Commit & push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add macro_data data.js "週次ブリーフィング.md"
+          if git diff --staged --quiet; then
+            echo "変更なし: コミットをスキップ"
+          else
+            git commit -m "data: weekly auto-update (CI)"
+            git push
+          fi
