@@ -453,7 +453,7 @@ window.G7DATA = {
         "stress": null,
         "delta": 247.8,
         "delta_z": 0.04,
-        "stale_days": 56,
+        "stale_days": 59,
         "stale": false,
         "history": [
           [
@@ -1914,7 +1914,7 @@ window.G7DATA = {
         "stress": null,
         "delta": 22002.0,
         "delta_z": 0.01,
-        "stale_days": 2,
+        "stale_days": 5,
         "stale": false,
         "history": [
           [
@@ -2654,7 +2654,7 @@ window.G7DATA = {
         "stress": null,
         "delta": -0.01,
         "delta_z": -0.0,
-        "stale_days": 56,
+        "stale_days": 59,
         "stale": false,
         "history": [
           [
@@ -3386,21 +3386,17 @@ window.G7DATA = {
         "indicator": "10年国債利回り",
         "unit": "%",
         "group": "fundamental",
-        "latest": 4.41,
-        "latest_date": "2026-06-24",
+        "latest": 4.4,
+        "latest_date": "2026-06-25",
         "yoy": null,
         "zscore": -0.48,
         "pctile": 38,
         "stress": null,
-        "delta": -0.15,
-        "delta_z": -0.05,
-        "stale_days": 2,
+        "delta": -0.1,
+        "delta_z": -0.03,
+        "stale_days": 4,
         "stale": false,
         "history": [
-          [
-            "2025-10-03",
-            4.13
-          ],
           [
             "2025-10-06",
             4.18
@@ -4116,6 +4112,10 @@ window.G7DATA = {
           [
             "2026-06-24",
             4.41
+          ],
+          [
+            "2026-06-25",
+            4.4
           ]
         ],
         "history_yoy": []
@@ -4134,7 +4134,7 @@ window.G7DATA = {
         "stress": null,
         "delta": 1.572,
         "delta_z": 0.02,
-        "stale_days": 56,
+        "stale_days": 59,
         "stale": false,
         "history": [
           [
@@ -5595,7 +5595,7 @@ window.G7DATA = {
         "stress": null,
         "delta": 0.698,
         "delta_z": 0.01,
-        "stale_days": 56,
+        "stale_days": 59,
         "stale": false,
         "history": [
           [
@@ -7056,7 +7056,7 @@ window.G7DATA = {
         "stress": null,
         "delta": 124.67,
         "delta_z": 0.02,
-        "stale_days": 176,
+        "stale_days": 179,
         "stale": false,
         "history": [
           [
@@ -8517,7 +8517,7 @@ window.G7DATA = {
         "stress": null,
         "delta": 0.0,
         "delta_z": 0.0,
-        "stale_days": 56,
+        "stale_days": 59,
         "stale": false,
         "history": [
           [
@@ -9257,7 +9257,7 @@ window.G7DATA = {
         "stress": null,
         "delta": -59244.0,
         "delta_z": -0.02,
-        "stale_days": 7,
+        "stale_days": 10,
         "stale": false,
         "history": [
           [
@@ -9990,32 +9990,16 @@ window.G7DATA = {
         "unit": "%",
         "group": "fundamental",
         "latest": 2.25,
-        "latest_date": "2026-06-25",
+        "latest_date": "2026-06-29",
         "yoy": null,
         "zscore": 0.82,
         "pctile": 79,
         "stress": null,
         "delta": 0.25,
         "delta_z": 0.18,
-        "stale_days": 1,
+        "stale_days": 0,
         "stale": false,
         "history": [
-          [
-            "2025-12-28",
-            2.0
-          ],
-          [
-            "2025-12-29",
-            2.0
-          ],
-          [
-            "2025-12-30",
-            2.0
-          ],
-          [
-            "2025-12-31",
-            2.0
-          ],
           [
             "2026-01-01",
             2.0
@@ -10719,6 +10703,22 @@ window.G7DATA = {
           [
             "2026-06-25",
             2.25
+          ],
+          [
+            "2026-06-26",
+            2.25
+          ],
+          [
+            "2026-06-27",
+            2.25
+          ],
+          [
+            "2026-06-28",
+            2.25
+          ],
+          [
+            "2026-06-29",
+            2.25
           ]
         ],
         "history_yoy": []
@@ -10737,7 +10737,7 @@ window.G7DATA = {
         "stress": null,
         "delta": 0.0455,
         "delta_z": 0.02,
-        "stale_days": 56,
+        "stale_days": 59,
         "stale": false,
         "history": [
           [
@@ -11477,7 +11477,7 @@ window.G7DATA = {
         "stress": null,
         "delta": 0.08,
         "delta_z": 0.01,
-        "stale_days": 56,
+        "stale_days": 59,
         "stale": false,
         "history": [
           [
@@ -12930,21 +12930,17 @@ window.G7DATA = {
         "indicator": "マネーサプライ(M2)",
         "unit": "百万ユーロ",
         "group": "fundamental",
-        "latest": 16289850.0,
-        "latest_date": "2026-04-01",
-        "yoy": 3.83,
-        "zscore": 2.16,
+        "latest": 16381796.0,
+        "latest_date": "2026-05-01",
+        "yoy": 4.19,
+        "zscore": 2.17,
         "pctile": 100,
         "stress": null,
-        "delta": 7452.0,
-        "delta_z": 0.0,
-        "stale_days": 86,
-        "stale": true,
+        "delta": 93069.0,
+        "delta_z": 0.02,
+        "stale_days": 59,
+        "stale": false,
         "history": [
-          [
-            "2011-05-01",
-            8480338.0
-          ],
           [
             "2011-06-01",
             8495988.0
@@ -13647,26 +13643,26 @@ window.G7DATA = {
           ],
           [
             "2026-01-01",
-            16203119.0
+            16203232.0
           ],
           [
             "2026-02-01",
-            16244868.0
+            16244995.0
           ],
           [
             "2026-03-01",
-            16282398.0
+            16282533.0
           ],
           [
             "2026-04-01",
-            16289850.0
+            16288727.0
+          ],
+          [
+            "2026-05-01",
+            16381796.0
           ]
         ],
         "history_yoy": [
-          [
-            "2011-05-01",
-            2.38
-          ],
           [
             "2011-06-01",
             2.18
@@ -14381,7 +14377,11 @@ window.G7DATA = {
           ],
           [
             "2026-04-01",
-            3.83
+            3.82
+          ],
+          [
+            "2026-05-01",
+            4.19
           ]
         ]
       },
@@ -14391,21 +14391,17 @@ window.G7DATA = {
         "indicator": "マネーサプライ(M3)",
         "unit": "百万ユーロ",
         "group": "fundamental",
-        "latest": 17433911.0,
-        "latest_date": "2026-04-01",
-        "yoy": 3.26,
-        "zscore": 2.16,
+        "latest": 17552244.0,
+        "latest_date": "2026-05-01",
+        "yoy": 3.76,
+        "zscore": 2.18,
         "pctile": 100,
         "stress": null,
-        "delta": -13523.0,
-        "delta_z": -0.0,
-        "stale_days": 86,
-        "stale": true,
+        "delta": 117418.0,
+        "delta_z": 0.02,
+        "stale_days": 59,
+        "stale": false,
         "history": [
-          [
-            "2011-05-01",
-            9369117.0
-          ],
           [
             "2011-06-01",
             9386874.0
@@ -15108,26 +15104,26 @@ window.G7DATA = {
           ],
           [
             "2026-01-01",
-            17331912.0
+            17332041.0
           ],
           [
             "2026-02-01",
-            17355092.0
+            17355236.0
           ],
           [
             "2026-03-01",
-            17447434.0
+            17447586.0
           ],
           [
             "2026-04-01",
-            17433911.0
+            17434826.0
+          ],
+          [
+            "2026-05-01",
+            17552244.0
           ]
         ],
         "history_yoy": [
-          [
-            "2011-05-01",
-            -0.21
-          ],
           [
             "2011-06-01",
             1.58
@@ -15842,7 +15838,11 @@ window.G7DATA = {
           ],
           [
             "2026-04-01",
-            3.26
+            3.27
+          ],
+          [
+            "2026-05-01",
+            3.76
           ]
         ]
       },
@@ -15860,7 +15860,7 @@ window.G7DATA = {
         "stress": null,
         "delta": 2.4742,
         "delta_z": 0.01,
-        "stale_days": 56,
+        "stale_days": 59,
         "stale": false,
         "history": [
           [
@@ -17314,20 +17314,16 @@ window.G7DATA = {
         "unit": "%",
         "group": "market",
         "latest": 0.31,
-        "latest_date": "2026-06-25",
+        "latest_date": "2026-06-26",
         "yoy": null,
         "zscore": -0.59,
         "pctile": 31,
         "stress": 0.59,
-        "delta": -0.18,
-        "delta_z": -0.2,
-        "stale_days": 1,
+        "delta": -0.17,
+        "delta_z": -0.19,
+        "stale_days": 3,
         "stale": false,
         "history": [
-          [
-            "2025-10-06",
-            0.58
-          ],
           [
             "2025-10-07",
             0.57
@@ -18043,6 +18039,10 @@ window.G7DATA = {
           [
             "2026-06-25",
             0.31
+          ],
+          [
+            "2026-06-26",
+            0.31
           ]
         ],
         "history_yoy": []
@@ -18053,21 +18053,17 @@ window.G7DATA = {
         "indicator": "イールドカーブ",
         "unit": "%",
         "group": "market",
-        "latest": 0.56,
-        "latest_date": "2026-06-25",
+        "latest": 0.55,
+        "latest_date": "2026-06-26",
         "yoy": null,
-        "zscore": -0.78,
+        "zscore": -0.79,
         "pctile": 25,
-        "stress": 0.78,
-        "delta": -0.26,
-        "delta_z": -0.21,
-        "stale_days": 1,
+        "stress": 0.79,
+        "delta": -0.25,
+        "delta_z": -0.2,
+        "stale_days": 3,
         "stale": false,
         "history": [
-          [
-            "2025-10-06",
-            0.16
-          ],
           [
             "2025-10-07",
             0.13
@@ -18783,6 +18779,10 @@ window.G7DATA = {
           [
             "2026-06-25",
             0.56
+          ],
+          [
+            "2026-06-26",
+            0.55
           ]
         ],
         "history_yoy": []
@@ -18793,21 +18793,17 @@ window.G7DATA = {
         "indicator": "実質金利",
         "unit": "%",
         "group": "market",
-        "latest": 2.23,
-        "latest_date": "2026-06-24",
+        "latest": 2.19,
+        "latest_date": "2026-06-25",
         "yoy": null,
-        "zscore": 1.23,
-        "pctile": 92,
+        "zscore": 1.19,
+        "pctile": 90,
         "stress": null,
-        "delta": 0.07,
-        "delta_z": 0.07,
-        "stale_days": 2,
+        "delta": 0.09,
+        "delta_z": 0.09,
+        "stale_days": 4,
         "stale": false,
         "history": [
-          [
-            "2025-10-03",
-            1.8
-          ],
           [
             "2025-10-06",
             1.84
@@ -19523,6 +19519,10 @@ window.G7DATA = {
           [
             "2026-06-24",
             2.23
+          ],
+          [
+            "2026-06-25",
+            2.19
           ]
         ],
         "history_yoy": []
@@ -19533,21 +19533,17 @@ window.G7DATA = {
         "indicator": "期待インフレ",
         "unit": "%",
         "group": "market",
-        "latest": 2.21,
-        "latest_date": "2026-06-25",
+        "latest": 2.2,
+        "latest_date": "2026-06-26",
         "yoy": null,
-        "zscore": 0.26,
-        "pctile": 49,
+        "zscore": 0.24,
+        "pctile": 48,
         "stress": null,
         "delta": -0.19,
         "delta_z": -0.48,
-        "stale_days": 1,
+        "stale_days": 3,
         "stale": false,
         "history": [
-          [
-            "2025-10-06",
-            2.34
-          ],
           [
             "2025-10-07",
             2.35
@@ -20263,6 +20259,10 @@ window.G7DATA = {
           [
             "2026-06-25",
             2.21
+          ],
+          [
+            "2026-06-26",
+            2.2
           ]
         ],
         "history_yoy": []
@@ -20274,20 +20274,16 @@ window.G7DATA = {
         "unit": "%",
         "group": "market",
         "latest": 2.19,
-        "latest_date": "2026-06-25",
+        "latest_date": "2026-06-26",
         "yoy": null,
         "zscore": -0.18,
-        "pctile": 36,
+        "pctile": 37,
         "stress": null,
-        "delta": -0.08,
-        "delta_z": -0.25,
-        "stale_days": 1,
+        "delta": -0.06,
+        "delta_z": -0.18,
+        "stale_days": 3,
         "stale": false,
         "history": [
-          [
-            "2025-10-06",
-            2.3
-          ],
           [
             "2025-10-07",
             2.31
@@ -21003,6 +20999,10 @@ window.G7DATA = {
           [
             "2026-06-25",
             2.19
+          ],
+          [
+            "2026-06-26",
+            2.19
           ]
         ],
         "history_yoy": []
@@ -21013,21 +21013,17 @@ window.G7DATA = {
         "indicator": "クレジットスプレッド",
         "unit": "%",
         "group": "market",
-        "latest": 2.76,
-        "latest_date": "2026-06-24",
+        "latest": 2.78,
+        "latest_date": "2026-06-25",
         "yoy": null,
-        "zscore": -0.99,
-        "pctile": 14,
-        "stress": -0.99,
-        "delta": 0.02,
-        "delta_z": 0.04,
-        "stale_days": 2,
+        "zscore": -0.94,
+        "pctile": 16,
+        "stress": -0.94,
+        "delta": 0.06,
+        "delta_z": 0.13,
+        "stale_days": 4,
         "stale": false,
         "history": [
-          [
-            "2025-10-20",
-            2.99
-          ],
           [
             "2025-10-21",
             2.97
@@ -21743,6 +21739,10 @@ window.G7DATA = {
           [
             "2026-06-24",
             2.76
+          ],
+          [
+            "2026-06-25",
+            2.78
           ]
         ],
         "history_yoy": []
@@ -21753,21 +21753,17 @@ window.G7DATA = {
         "indicator": "クレジットスプレッド",
         "unit": "%",
         "group": "market",
-        "latest": 0.75,
-        "latest_date": "2026-06-24",
+        "latest": 0.76,
+        "latest_date": "2026-06-25",
         "yoy": null,
-        "zscore": -1.12,
-        "pctile": 8,
-        "stress": -1.12,
-        "delta": 0.01,
-        "delta_z": 0.06,
-        "stale_days": 2,
+        "zscore": -1.06,
+        "pctile": 10,
+        "stress": -1.06,
+        "delta": 0.02,
+        "delta_z": 0.12,
+        "stale_days": 4,
         "stale": false,
         "history": [
-          [
-            "2025-10-20",
-            0.79
-          ],
           [
             "2025-10-21",
             0.79
@@ -22483,6 +22479,10 @@ window.G7DATA = {
           [
             "2026-06-24",
             0.75
+          ],
+          [
+            "2026-06-25",
+            0.76
           ]
         ],
         "history_yoy": []
@@ -22493,25 +22493,17 @@ window.G7DATA = {
         "indicator": "ボラティリティ",
         "unit": "pt",
         "group": "market",
-        "latest": 18.63,
-        "latest_date": "2026-06-24",
+        "latest": 18.41,
+        "latest_date": "2026-06-26",
         "yoy": null,
-        "zscore": -0.11,
-        "pctile": 56,
-        "stress": -0.11,
-        "delta": 2.04,
-        "delta_z": 0.26,
-        "stale_days": 2,
+        "zscore": -0.13,
+        "pctile": 54,
+        "stress": -0.13,
+        "delta": 2.12,
+        "delta_z": 0.27,
+        "stale_days": 3,
         "stale": false,
         "history": [
-          [
-            "2025-10-13",
-            19.03
-          ],
-          [
-            "2025-10-14",
-            20.81
-          ],
           [
             "2025-10-15",
             20.64
@@ -23223,6 +23215,14 @@ window.G7DATA = {
           [
             "2026-06-24",
             18.63
+          ],
+          [
+            "2026-06-25",
+            18.89
+          ],
+          [
+            "2026-06-26",
+            18.41
           ]
         ],
         "history_yoy": []
@@ -23241,8 +23241,8 @@ window.G7DATA = {
         "stress": 1.14,
         "delta": 0.9448,
         "delta_z": 0.08,
-        "stale_days": 8,
-        "stale": false,
+        "stale_days": 11,
+        "stale": true,
         "history": [
           [
             "2025-09-30",
@@ -23981,8 +23981,8 @@ window.G7DATA = {
         "stress": null,
         "delta": 2.26,
         "delta_z": 0.03,
-        "stale_days": 8,
-        "stale": false,
+        "stale_days": 11,
+        "stale": true,
         "history": [
           [
             "2025-09-30",
@@ -24721,8 +24721,8 @@ window.G7DATA = {
         "stress": null,
         "delta": -0.0132,
         "delta_z": -0.09,
-        "stale_days": 8,
-        "stale": false,
+        "stale_days": 11,
+        "stale": true,
         "history": [
           [
             "2025-09-30",
@@ -25461,7 +25461,7 @@ window.G7DATA = {
         "stress": -0.52,
         "delta": -0.011,
         "delta_z": -0.01,
-        "stale_days": 7,
+        "stale_days": 10,
         "stale": false,
         "history": [
           [
@@ -26201,7 +26201,7 @@ window.G7DATA = {
         "stress": -0.61,
         "delta": 5000.0,
         "delta_z": 0.02,
-        "stale_days": 6,
+        "stale_days": 9,
         "stale": false,
         "history": [
           [
@@ -26941,7 +26941,7 @@ window.G7DATA = {
         "stress": null,
         "delta": -21.41,
         "delta_z": -0.72,
-        "stale_days": 4,
+        "stale_days": 7,
         "stale": false,
         "history": [
           [
@@ -27681,7 +27681,7 @@ window.G7DATA = {
         "stress": -1.19,
         "delta": -0.0951,
         "delta_z": -0.05,
-        "stale_days": 2,
+        "stale_days": 5,
         "stale": false,
         "history": [
           [
@@ -29134,21 +29134,17 @@ window.G7DATA = {
         "indicator": "株価指数",
         "unit": "pt",
         "group": "market",
-        "latest": 7357.49,
-        "latest_date": "2026-06-25",
+        "latest": 7354.02,
+        "latest_date": "2026-06-26",
         "yoy": null,
-        "zscore": 2.38,
+        "zscore": 2.37,
         "pctile": 99,
         "stress": null,
-        "delta": -161.63,
-        "delta_z": -0.11,
-        "stale_days": 1,
+        "delta": -166.34,
+        "delta_z": -0.12,
+        "stale_days": 3,
         "stale": false,
         "history": [
-          [
-            "2025-10-07",
-            6714.59
-          ],
           [
             "2025-10-08",
             6753.72
@@ -29864,6 +29860,10 @@ window.G7DATA = {
           [
             "2026-06-25",
             7357.49
+          ],
+          [
+            "2026-06-26",
+            7354.02
           ]
         ],
         "history_yoy": []
@@ -29874,25 +29874,17 @@ window.G7DATA = {
         "indicator": "株価指数",
         "unit": "円",
         "group": "market",
-        "latest": 72366.34,
-        "latest_date": "2026-06-25",
+        "latest": 69468.11,
+        "latest_date": "2026-06-29",
         "yoy": null,
-        "zscore": 5.59,
+        "zscore": 5.32,
         "pctile": 100,
         "stress": null,
-        "delta": 7370.25,
-        "delta_z": 0.68,
-        "stale_days": 1,
+        "delta": 3138.61,
+        "delta_z": 0.29,
+        "stale_days": 0,
         "stale": false,
         "history": [
-          [
-            "2025-09-29",
-            45043.75
-          ],
-          [
-            "2025-09-30",
-            44932.63
-          ],
           [
             "2025-10-01",
             44550.85
@@ -30604,6 +30596,14 @@ window.G7DATA = {
           [
             "2026-06-25",
             72366.34
+          ],
+          [
+            "2026-06-26",
+            69360.88
+          ],
+          [
+            "2026-06-29",
+            69468.11
           ]
         ],
         "history_yoy": []
@@ -30622,7 +30622,7 @@ window.G7DATA = {
         "stress": null,
         "delta": 593.0638,
         "delta_z": 0.2,
-        "stale_days": 56,
+        "stale_days": 59,
         "stale": false,
         "history": [
           [
@@ -31354,21 +31354,17 @@ window.G7DATA = {
         "indicator": "建玉(COT)",
         "unit": "枚",
         "group": "market",
-        "latest": 180220.0,
-        "latest_date": "2026-06-16",
+        "latest": 181339.0,
+        "latest_date": "2026-06-23",
         "yoy": null,
-        "zscore": 0.87,
+        "zscore": 0.88,
         "pctile": 77,
         "stress": null,
-        "delta": 8598.0,
-        "delta_z": 0.09,
-        "stale_days": 10,
+        "delta": 21506.0,
+        "delta_z": 0.22,
+        "stale_days": 6,
         "stale": false,
         "history": [
-          [
-            "2023-01-10",
-            150535.0
-          ],
           [
             "2023-01-17",
             153240.0
@@ -32084,6 +32080,10 @@ window.G7DATA = {
           [
             "2026-06-16",
             180220.0
+          ],
+          [
+            "2026-06-23",
+            181339.0
           ]
         ],
         "history_yoy": []
@@ -32094,21 +32094,17 @@ window.G7DATA = {
         "indicator": "建玉(COT)",
         "unit": "枚",
         "group": "market",
-        "latest": 20083.0,
-        "latest_date": "2026-06-16",
+        "latest": 20974.0,
+        "latest_date": "2026-06-23",
         "yoy": null,
-        "zscore": -1.36,
-        "pctile": 10,
+        "zscore": -1.24,
+        "pctile": 12,
         "stress": null,
-        "delta": -3265.0,
-        "delta_z": -0.4,
-        "stale_days": 10,
+        "delta": -3611.0,
+        "delta_z": -0.44,
+        "stale_days": 6,
         "stale": false,
         "history": [
-          [
-            "2023-01-10",
-            34263.0
-          ],
           [
             "2023-01-17",
             33838.0
@@ -32824,6 +32820,10 @@ window.G7DATA = {
           [
             "2026-06-16",
             20083.0
+          ],
+          [
+            "2026-06-23",
+            20974.0
           ]
         ],
         "history_yoy": []
@@ -32834,21 +32834,17 @@ window.G7DATA = {
         "indicator": "建玉(COT)",
         "unit": "枚",
         "group": "market",
-        "latest": -150132.0,
-        "latest_date": "2026-06-16",
+        "latest": -146104.0,
+        "latest_date": "2026-06-23",
         "yoy": null,
-        "zscore": -2.18,
+        "zscore": -2.1,
         "pctile": 1,
         "stress": null,
-        "delta": -75030.0,
-        "delta_z": -1.29,
-        "stale_days": 10,
+        "delta": -52199.0,
+        "delta_z": -0.9,
+        "stale_days": 6,
         "stale": false,
         "history": [
-          [
-            "2023-01-10",
-            -35377.0
-          ],
           [
             "2023-01-17",
             -22961.0
@@ -33564,6 +33560,10 @@ window.G7DATA = {
           [
             "2026-06-16",
             -150132.0
+          ],
+          [
+            "2026-06-23",
+            -146104.0
           ]
         ],
         "history_yoy": []
@@ -33574,21 +33574,17 @@ window.G7DATA = {
         "indicator": "建玉(COT)",
         "unit": "枚",
         "group": "market",
-        "latest": 34353.0,
-        "latest_date": "2026-06-16",
+        "latest": 30158.0,
+        "latest_date": "2026-06-23",
         "yoy": null,
-        "zscore": 0.31,
-        "pctile": 68,
+        "zscore": 0.25,
+        "pctile": 64,
         "stress": null,
-        "delta": -5847.0,
-        "delta_z": -0.07,
-        "stale_days": 10,
+        "delta": -3355.0,
+        "delta_z": -0.04,
+        "stale_days": 6,
         "stale": false,
         "history": [
-          [
-            "2023-01-10",
-            134982.0
-          ],
           [
             "2023-01-17",
             126984.0
@@ -34304,6 +34300,10 @@ window.G7DATA = {
           [
             "2026-06-16",
             34353.0
+          ],
+          [
+            "2026-06-23",
+            30158.0
           ]
         ],
         "history_yoy": []
@@ -34314,21 +34314,17 @@ window.G7DATA = {
         "indicator": "建玉(COT)",
         "unit": "枚",
         "group": "market",
-        "latest": -193978.0,
-        "latest_date": "2026-06-16",
+        "latest": -35448.0,
+        "latest_date": "2026-06-23",
         "yoy": null,
-        "zscore": -0.67,
-        "pctile": 27,
+        "zscore": 0.73,
+        "pctile": 79,
         "stress": null,
-        "delta": -50143.0,
-        "delta_z": -0.44,
-        "stale_days": 10,
+        "delta": 105157.0,
+        "delta_z": 0.93,
+        "stale_days": 6,
         "stale": false,
         "history": [
-          [
-            "2023-01-10",
-            -213174.0
-          ],
           [
             "2023-01-17",
             -226818.0
@@ -35044,6 +35040,10 @@ window.G7DATA = {
           [
             "2026-06-16",
             -193978.0
+          ],
+          [
+            "2026-06-23",
+            -35448.0
           ]
         ],
         "history_yoy": []
@@ -35062,7 +35062,7 @@ window.G7DATA = {
         "stress": null,
         "delta": 41.9051,
         "delta_z": 0.02,
-        "stale_days": 56,
+        "stale_days": 59,
         "stale": false,
         "history": [
           [
@@ -36523,7 +36523,7 @@ window.G7DATA = {
         "stress": null,
         "delta": -0.0285,
         "delta_z": -0.04,
-        "stale_days": 2,
+        "stale_days": 5,
         "stale": false,
         "history": [
           [
@@ -37984,7 +37984,7 @@ window.G7DATA = {
         "stress": null,
         "delta": 11097.0,
         "delta_z": 0.0,
-        "stale_days": 56,
+        "stale_days": 59,
         "stale": false,
         "history": [
           [
@@ -38724,7 +38724,7 @@ window.G7DATA = {
         "stress": null,
         "delta": 0.135,
         "delta_z": 0.07,
-        "stale_days": 56,
+        "stale_days": 59,
         "stale": false,
         "history": [
           [
@@ -39464,7 +39464,7 @@ window.G7DATA = {
         "stress": null,
         "delta": -0.2,
         "delta_z": -0.17,
-        "stale_days": 86,
+        "stale_days": 89,
         "stale": true,
         "history": [
           [
@@ -40204,7 +40204,7 @@ window.G7DATA = {
         "stress": null,
         "delta": 0.1209,
         "delta_z": 0.03,
-        "stale_days": 56,
+        "stale_days": 59,
         "stale": false,
         "history": [
           [
@@ -40944,7 +40944,7 @@ window.G7DATA = {
         "stress": null,
         "delta": 0.0582,
         "delta_z": 0.02,
-        "stale_days": 56,
+        "stale_days": 59,
         "stale": false,
         "history": [
           [
@@ -41673,18 +41673,27 @@ window.G7DATA = {
     ],
     "signals": {
       "regime": {
-        "score": -0.23,
+        "score": -0.21,
         "label": "中立",
         "level": "ok"
       },
       "movers": [
         {
+          "id": "COT_SPX",
+          "country": "S&P500",
+          "indicator": "建玉(COT)",
+          "latest": -35448.0,
+          "delta": 105157.0,
+          "delta_z": 0.93,
+          "dir": "up"
+        },
+        {
           "id": "COT_JPY",
           "country": "円",
           "indicator": "建玉(COT)",
-          "latest": -150132.0,
-          "delta": -75030.0,
-          "delta_z": -1.29,
+          "latest": -146104.0,
+          "delta": -52199.0,
+          "delta_z": -0.9,
           "dir": "down"
         },
         {
@@ -41697,51 +41706,42 @@ window.G7DATA = {
           "dir": "down"
         },
         {
-          "id": "NIKKEI225",
-          "country": "日経225",
-          "indicator": "株価指数",
-          "latest": 72366.34,
-          "delta": 7370.25,
-          "delta_z": 0.68,
-          "dir": "up"
-        },
-        {
           "id": "T10YIE",
           "country": "10年",
           "indicator": "期待インフレ",
-          "latest": 2.21,
+          "latest": 2.2,
           "delta": -0.19,
           "delta_z": -0.48,
-          "dir": "down"
-        },
-        {
-          "id": "COT_SPX",
-          "country": "S&P500",
-          "indicator": "建玉(COT)",
-          "latest": -193978.0,
-          "delta": -50143.0,
-          "delta_z": -0.44,
           "dir": "down"
         },
         {
           "id": "COT_WTI",
           "country": "WTI原油",
           "indicator": "建玉(COT)",
-          "latest": 20083.0,
-          "delta": -3265.0,
-          "delta_z": -0.4,
+          "latest": 20974.0,
+          "delta": -3611.0,
+          "delta_z": -0.44,
           "dir": "down"
+        },
+        {
+          "id": "NIKKEI225",
+          "country": "日経225",
+          "indicator": "株価指数",
+          "latest": 69468.11,
+          "delta": 3138.61,
+          "delta_z": 0.29,
+          "dir": "up"
         }
       ]
     },
     "briefing": {
-      "as_of": "2026-06-26",
+      "as_of": "2026-06-29",
       "lines": [
-        "リスクレジーム: 中立 (総合スコア -0.23)",
-        "直近の主な変化: ▼建玉(COT)・円(Δz -1.29) / ▼商品・WTI原油(Δz -0.72) / ▲株価指数・日経225(Δz 0.68) / ▼期待インフレ・10年(Δz -0.48) / ▼建玉(COT)・S&P500(Δz -0.44)",
-        "極端な水準(|Z|≥2): 株価指数・日経225 z5.59(高) / 商品・銅 z2.8(高) / マネーサプライ(M2)・米国 z2.79(高) / 株価指数・S&P500 z2.38(高) / CPI・米国 z2.32(高) / CPI・ユーロ圏 z2.32(高) / 実質(インフレ調整)・実質M2(米) z2.2(高) / 建玉(COT)・円 z-2.18(低) / コアCPI・米国 z2.16(高) / 実質GDP・米国 z2.16(高) / マネーサプライ(M2)・ユーロ圏 z2.16(高) / マネーサプライ(M3)・ユーロ圏 z2.16(高)",
-        "ポジション偏り(建玉|Z|≥1.5): 円 z-2.18(売り過熱)",
-        "データ鮮度: ⚠ マネーサプライ(M2)・ユーロ圏(86日) / マネーサプライ(M3)・ユーロ圏(86日) / 失業率・日本(86日)"
+        "リスクレジーム: 中立 (総合スコア -0.21)",
+        "直近の主な変化: ▲建玉(COT)・S&P500(Δz 0.93) / ▼建玉(COT)・円(Δz -0.9) / ▼商品・WTI原油(Δz -0.72) / ▼期待インフレ・10年(Δz -0.48) / ▼建玉(COT)・WTI原油(Δz -0.44)",
+        "極端な水準(|Z|≥2): 株価指数・日経225 z5.32(高) / 商品・銅 z2.8(高) / マネーサプライ(M2)・米国 z2.79(高) / 株価指数・S&P500 z2.37(高) / CPI・米国 z2.32(高) / CPI・ユーロ圏 z2.32(高) / 実質(インフレ調整)・実質M2(米) z2.2(高) / マネーサプライ(M3)・ユーロ圏 z2.18(高) / マネーサプライ(M2)・ユーロ圏 z2.17(高) / コアCPI・米国 z2.16(高) / 実質GDP・米国 z2.16(高) / 建玉(COT)・円 z-2.1(低)",
+        "ポジション偏り(建玉|Z|≥1.5): 円 z-2.1(売り過熱)",
+        "データ鮮度: ⚠ 為替・ドル指数(11日) / 為替・ドル円(11日) / 為替・ユーロドル(11日) / 失業率・日本(89日)"
       ]
     }
   }
