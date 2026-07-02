@@ -390,6 +390,17 @@ function renderMoneyFlow(){
       ${chartCaption([{points:gl.history}])}
       <div class="meta-row">※ドル換算のため為替変動（円安・ユーロ安）の影響を含む</div>
     </div>` : '';
+  const fo = macro.find(s => s.id === 'MOF_FLOW_OUT');
+  const fi = macro.find(s => s.id === 'MOF_FLOW_IN');
+  const flowLines = [fo, fi].filter(Boolean).map((s, i) => ({label: s.country, points: s.history || [], color: ['#4f8cff', '#ff8c4f'][i]}));
+  const flowCard = flowLines.length ? `
+    <div class="card">
+      <h3>対外・対内証券フロー（週次ネット・兆円）</h3>
+      ${legendHTML(flowLines)}
+      ${lineChartSVG(flowLines, {h:140})}
+      ${chartCaption(flowLines)}
+      <div class="meta-row">＋＝取得超（対外＝日本勢の外向き投資、対内＝海外勢の対日投資）。出典: 財務省（週次・指定報告機関ベース）</div>
+    </div>` : '';
   const analysisCard = (a.global_liquidity || a.fx_rates || a.implications) ? `
     <div class="card">
       <h3>考察：世界の流動性</h3>
@@ -405,6 +416,7 @@ function renderMoneyFlow(){
   }
   el.innerHTML = `
     ${glCard}
+    ${flowCard}
     ${analysisCard}
     <div class="card">
       <h3>マネーサプライ(M2) 前年比 ── 主要国比較</h3>
