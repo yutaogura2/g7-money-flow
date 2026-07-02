@@ -229,6 +229,20 @@ def test_payload_includes_briefing(tmp_path):
     assert "briefing" in p and "lines" in p["briefing"]
 
 
+def test_no_stale_flag_suppresses_staleness(tmp_path):
+    (tmp_path / "macro_data").mkdir()
+    (tmp_path / "macro_data" / "OLD.csv").write_text(
+        "date,value\n2020-01-01,1\n2020-02-01,2\n", encoding="utf-8")
+    (tmp_path / "series_config.json").write_text(json.dumps({
+        "history_points": 180, "series": [
+            {"id": "OLD", "country": "c", "indicator": "i", "unit": "u",
+             "transform": "level", "no_stale": True}]}), encoding="utf-8")
+    p = build.build_macro_payload(
+        config_path=tmp_path / "series_config.json", data_dir=tmp_path / "macro_data")
+    s = p["series"][0]
+    assert s["stale"] is False and s["stale_days"] == 0
+
+
 def test_build_briefing_upcoming_events():
     signals = {"regime": {"label": "中立", "score": 0.0, "level": "ok"}, "movers": []}
     events = [

@@ -167,6 +167,8 @@ def build_macro_payload(config_path=None, data_dir=None, points=None, calendar=N
         delta = round(v - prev, 4) if prev is not None else 0.0
         delta_z = round((v - prev) / std, 2) if (prev is not None and std) else 0.0
         stale_days, stale = _staleness(rows, date.today())
+        if s.get("no_stale"):
+            stale_days, stale = 0, False
         series.append({
             "id": s["id"], "country": s["country"], "indicator": s["indicator"],
             "unit": s.get("unit", ""),
