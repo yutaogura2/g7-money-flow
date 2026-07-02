@@ -99,6 +99,31 @@ def build_signals(series: list) -> dict:
     return {"regime": {"score": score, "label": label, "level": level}, "movers": movers}
 
 
+def build_policy_cycle(series: list) -> list:
+    out = []
+    for s in series:
+        if s.get("indicator") != "政策金利":
+            continue
+        hist = s.get("history") or []
+        if not hist:
+            continue
+        yy, mm, dd = (int(x) for x in s["latest_date"].split("-"))
+        target = (date(yy, mm, dd) - timedelta(days=183)).isoformat()
+        prior = None
+        for d, v in hist:
+            if d <= target:
+                prior = v
+            else:
+                break
+        if prior is None:
+            continue
+        delta = round(s["latest"] - prior, 2)
+        direction = "up" if delta > 0.1 else ("down" if delta < -0.1 else "flat")
+        out.append({"country": s["country"], "latest": s["latest"],
+                    "delta6m": delta, "dir": direction})
+    return out
+
+
 def build_briefing(series: list, signals: dict, as_of: str, events=None) -> dict:
     lines = []
     reg = signals.get("regime", {})
@@ -181,6 +206,7 @@ def build_macro_payload(config_path=None, data_dir=None, points=None, calendar=N
             "history_yoy": [[r[0], r[2]] for r in rows if r[2] is not None][-pts:],
         })
     signals = build_signals(series)
+    signals["policy_cycle"] = build_policy_cycle(series)
     briefing = build_briefing(series, signals, date.today().isoformat(), events=calendar)
     return {"series": series, "signals": signals, "briefing": briefing}
 
