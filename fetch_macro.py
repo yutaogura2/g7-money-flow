@@ -21,6 +21,9 @@ ECB_URL = "https://data-api.ecb.europa.eu/service/data"
 BOJ_M2_CSV = "https://www.stat-search.boj.or.jp/ssi/mtshtml/csv/md02_m_1.csv"
 BOJ_M2_CODE = "MD02'MAM1NAM2M2MO"   # マネーストック M2 平均残高(億円)
 CFTC_URL = "https://publicreporting.cftc.gov/resource/6dca-aqww.json"
+MOF_WEEK_CSV = "https://www.mof.go.jp/policy/international_policy/reference/itn_transactions_in_securities/week.csv"
+MOF_FEIO_CSV = "https://www.mof.go.jp/policy/international_policy/reference/feio/foreign_exchange_intervention_operations.csv"
+_MOF_CACHE: dict = {}   # URL -> デコード済みテキスト（同一実行内での重複取得を回避）
 
 
 def load_config(path: Path = SERIES_CONFIG) -> dict:
@@ -194,6 +197,48 @@ def fetch_cftc(market_name: str, urlopen=urllib.request.urlopen) -> list:
     with urlopen(req, timeout=60) as r:
         records = json.loads(r.read().decode("utf-8"))
     return _parse_cftc_rows(records)
+
+
+_MOF_WEEK_COLS = {"flow_out": 11, "flow_in": 22, "flow_in_eq": 14}
+_MOF_PERIOD_RE = re.compile(r"^(\d{4})\.(\d{1,2})\.(\d{1,2})~(\d{1,2})\.(\d{1,2})$")
+
+
+def _parse_mof_week_csv(text: str, kind: str) -> list:
+    col = _MOF_WEEK_COLS[kind]
+    out = []
+    for r in csv.reader(io.StringIO(text)):
+        if not r or col >= len(r):
+            continue
+        period = (r[0] or "").replace("．", ".").replace("～", "~")
+        period = period.replace(" ", "").replace("　", "")
+        m = _MOF_PERIOD_RE.match(period)
+        if not m:
+            continue
+        y, m1, _d1, m2, d2 = (int(x) for x in m.groups())
+        if m2 < m1:
+            y += 1                     # 年跨ぎ（12月末〜1月）
+        val = (r[col] or "").replace(",", "").strip()
+        if val in ("", "-"):
+            continue
+        try:
+            v = float(val)
+        except ValueError:
+            continue
+        out.append((f"{y}-{m2:02d}-{d2:02d}", round(v / 10000.0, 4)))   # 億円→兆円
+    out.sort(key=lambda x: x[0])
+    return out
+
+
+def _mof_text(url: str, urlopen=urllib.request.urlopen) -> str:
+    if url not in _MOF_CACHE:
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urlopen(req, timeout=60) as r:
+            _MOF_CACHE[url] = r.read().decode("cp932")
+    return _MOF_CACHE[url]
+
+
+def fetch_mof_flows(kind: str, urlopen=urllib.request.urlopen) -> list:
+    return _parse_mof_week_csv(_mof_text(MOF_WEEK_CSV, urlopen), kind)
 
 
 def _nearest_prior(pairs: list, target: str):

@@ -341,6 +341,50 @@ def test_computed_dispatch_spread():
     assert out == [("2026-06-18", 1.5)]
 
 
+def _mof_week_sample():
+    def row(period, c11, c14, c22):
+        cells = [period] + ["0"] * 22
+        cells[11], cells[14], cells[22] = c11, c14, c22
+        return ",".join(f'"{c}"' for c in cells)
+    return "\n".join([
+        "対外及び対内証券投資契約等の状況,,,",
+        "International Transactions,,,",
+        row("2026．6．21～6．27", "1,474 ", "-1,332 ", "-47,363 "),
+        row("2005．12．26～ 1．1", "10,000", "500", "-2,000"),
+    ]) + "\n"
+
+
+def test_parse_mof_week_csv_kinds_and_rollover():
+    text = _mof_week_sample()
+    out_total = fetch_macro._parse_mof_week_csv(text, "flow_out")
+    in_total = fetch_macro._parse_mof_week_csv(text, "flow_in")
+    in_eq = fetch_macro._parse_mof_week_csv(text, "flow_in_eq")
+    assert ("2026-06-27", 0.1474) in out_total
+    assert ("2026-06-27", -4.7363) in in_total
+    assert ("2026-06-27", -0.1332) in in_eq
+    # 年跨ぎ: 2005.12.26〜1.1 → 終了日 2006-01-01
+    assert ("2006-01-01", 1.0) in out_total
+    assert out_total == sorted(out_total)
+
+
+def test_fetch_mof_flows_uses_cache():
+    fetch_macro._MOF_CACHE.clear()
+    calls = {"n": 0}
+    body = _mof_week_sample().encode("cp932")
+    class _R:
+        def read(self): return body
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+    def fake_urlopen(req, timeout=60):
+        calls["n"] += 1
+        return _R()
+    a = fetch_macro.fetch_mof_flows("flow_out", urlopen=fake_urlopen)
+    b = fetch_macro.fetch_mof_flows("flow_in", urlopen=fake_urlopen)
+    assert calls["n"] == 1          # 2系列でも取得は1回（キャッシュ）
+    assert a and b
+    fetch_macro._MOF_CACHE.clear()
+
+
 def test_run_handles_cftc_source(tmp_path):
     cfg = {"series": [{"id": "COT_GOLD", "source": "cftc",
                        "cftc_market": "GOLD - X", "transform": "level"}]}
