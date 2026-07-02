@@ -1,6 +1,6 @@
 {
   "meta": {
-    "last_updated": "2026-06-22",
+    "last_updated": "2026-07-02",
     "sources": [
       { "name": "英国政府 (GOV.UK / HM Treasury)", "url": "https://www.gov.uk/government/news/g7-finance-ministers-agree-historic-global-tax-agreement", "lang": "en" },
       { "name": "G7情報センター (トロント大学)", "url": "https://g7.utoronto.ca/summit/2022elmau/index.html", "lang": "en" },
@@ -204,6 +204,82 @@
       },
       "market_direction": "エネルギー・重要鉱物・防衛にテーマ／不均衡是正でドル偏重に長期論点",
       "tags": ["制裁強化", "ロシア石油ガス", "重要鉱物", "世界的不均衡", "IMF", "AI"]
+    },
+    {
+      "id": "2026-06-ecb-hike",
+      "date": "2026-06-11",
+      "type": "金融政策",
+      "presidency": "ECB",
+      "title_orig": "Monetary policy decisions (11 June 2026)",
+      "title_ja": "ECB理事会 ── 3年ぶり利上げ、預金金利2.25%へ（+25bp）",
+      "source_url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260611~4d41bd5e83.en.html",
+      "source_lang": "en",
+      "summary_ja": "主要3金利を25bp引き上げ（預金ファシリティ2.25%、主要リファイナンス2.40%、限界貸付2.65%。6/17適用）。中東戦争がインフレ圧力を生んでおり、ショックの波及シナリオ全般に対して利上げが頑健と判断。3年ぶりの利上げで緩和局面から転換。",
+      "key_points_ja": [
+        "預金ファシリティ金利を2.25%へ引き上げ（+25bp、6/17適用）",
+        "主要リファイナンス2.40%・限界貸付2.65%",
+        "中東戦争によるインフレ圧力を明示し、シナリオ横断で利上げが頑健と判断"
+      ],
+      "full_translation_ja": "理事会は本日、ECBの主要3金利を25ベーシスポイント引き上げることを決定した。中東における戦争はインフレ圧力を生じさせており、本決定はショックの推移とユーロ圏の中期見通しへの影響に関する幅広いシナリオに対して頑健である。",
+      "analysis": {
+        "fx_rates": "米欧政策金利差の縮小はユーロ支援・ドル抑制方向。ユーロドルの下値を固める材料。",
+        "commodities": "中東発のエネルギー高がインフレ経由で利上げを誘発する構図。原油高が続けば追加引き締め観測。",
+        "sectors": "欧州銀行には利ざや改善でプラス。高PERグロースには金利上昇の逆風。",
+        "geopolitics": "中東（イラン）紛争がインフレ・金融政策の主変数化。地政学→政策→通貨の連鎖が顕在。"
+      },
+      "market_direction": "ユーロ下支え／欧州金利上昇・銀行株フォロー",
+      "tags": ["ECB", "利上げ", "中東紛争", "インフレ"]
+    },
+    {
+      "id": "2026-06-boj-hike",
+      "date": "2026-06-16",
+      "type": "金融政策",
+      "presidency": "日銀",
+      "title_orig": "当面の金融政策運営について（2026年6月16日）",
+      "title_ja": "日銀決定会合 ── 政策金利を1.00%へ引き上げ（+25bp）",
+      "source_url": "https://www.boj.or.jp/mopo/mpmdeci/mpr_2026/index.htm",
+      "source_lang": "ja",
+      "summary_ja": "6/15-16の決定会合で政策金利を1.00%へ引き上げ（+0.25%）。賛成7・反対1（浅田委員：中東情勢は物価の上振れよりも生産・雇用の下振れリスクが大きいと主張）。植田総裁入院中のため氷見野副総裁が議長を務める異例の会合。",
+      "key_points_ja": [
+        "無担保コールレート誘導目標を1.00%程度へ引き上げ（+0.25%）",
+        "賛成7・反対1（浅田委員が中東起因の景気下振れを理由に反対）",
+        "植田総裁入院により氷見野副総裁が議長代行"
+      ],
+      "full_translation_ja": "日本銀行は、無担保コールレート（オーバーナイト物）を1.00%程度で推移するよう促すこととした（賛成7・反対1）。",
+      "analysis": {
+        "fx_rates": "日米金利差の縮小加速で円高圧力。円ショートが歴史的水準（COT z-2.1台）に積み上がる中の利上げは、巻き戻し（急激な円高）の引き金になり得る。",
+        "commodities": "円高が進めば円建てコモディティ・輸入物価は低下方向。",
+        "sectors": "銀行に利ざや改善プラス。輸出株・高配当株には円高・金利上昇の逆風。不動産・REITに調整圧力。",
+        "geopolitics": "中東発インフレへの対応として日銀も引き締めに参加。世界的な引き締め再開の一角。"
+      },
+      "market_direction": "円高方向／銀行株プラス・輸出株マイナス／JGB利回り上昇",
+      "tags": ["日銀", "利上げ", "円", "中東紛争"]
+    },
+    {
+      "id": "2026-06-fomc-hold",
+      "date": "2026-06-17",
+      "type": "金融政策",
+      "presidency": "FRB",
+      "title_orig": "Federal Reserve issues FOMC statement (June 17, 2026)",
+      "title_ja": "FOMC ── 4会合連続の据置き（3.50-3.75%）、ドットは上方修正",
+      "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617a.htm",
+      "source_lang": "en",
+      "summary_ja": "FF金利誘導目標を3.50-3.75%に据置き（12-0全会一致、4会合連続）。経済は堅調に拡大も、中東紛争に起因する不確実性とエネルギー等の供給ショックでインフレは2%目標比で高止まり。声明は大幅に短文化されフォワードガイダンスを撤廃。SEP中央値は2026年末3.8%へ上方修正（3月の3.4%から）＝**年内利上げ**の可能性を示唆。",
+      "key_points_ja": [
+        "FF金利3.50-3.75%で据置き（12-0、4会合連続）",
+        "声明を短文化しフォワードガイダンスを撤廃（データ重視へ）",
+        "SEP中央値: 2026年末3.8%（前回3.4%）＝利上げ方向へ修正",
+        "中東紛争・エネルギー供給ショックでインフレ高止まりを明記"
+      ],
+      "full_translation_ja": "委員会は、FF金利の誘導目標レンジを3.5〜3.75%に維持することを決定した。経済活動は堅調なペースで拡大しているが、中東の紛争に一部起因する高い不確実性が存在する。インフレ率は、エネルギーを含む一部セクターの価格上昇を促した供給ショックを一部反映し、委員会の2%目標対比で高止まりしている。",
+      "analysis": {
+        "fx_rates": "据置きだがドット上方修正はタカ派サプライズ。ただし日欧が利上げに動いており、金利差はむしろ縮小方向＝ドル一方高は抑制。",
+        "commodities": "中東・エネルギーショックをFRBが明示。原油はインフレと政策の主変数。",
+        "sectors": "higher-for-longer強化で高PERグロースに逆風、金融株には金利環境プラス。",
+        "geopolitics": "3中銀そろって中東紛争を政策文言に組み込み。地政学がグローバル金融政策の共通ドライバーに。"
+      },
+      "market_direction": "米金利高止まり／ドルは日欧引き締めとの綱引き／株はバリュエーション圧力",
+      "tags": ["FOMC", "据置き", "SEP", "中東紛争", "インフレ"]
     }
   ],
   "calendar": [
@@ -218,7 +294,9 @@
     { "date": "2026-01-27", "name_ja": "FOMC（米連邦公開市場委員会）", "category": "FOMC", "status": "済", "related_meeting_id": null, "note": "1/27-28" },
     { "date": "2026-03-17", "name_ja": "FOMC（経済見通し・ドット公表）", "category": "FOMC", "status": "済", "related_meeting_id": null, "note": "3/17-18" },
     { "date": "2026-04-28", "name_ja": "FOMC（米連邦公開市場委員会）", "category": "FOMC", "status": "済", "related_meeting_id": null, "note": "4/28-29" },
-    { "date": "2026-06-16", "name_ja": "FOMC（経済見通し・ドット公表）", "category": "FOMC", "status": "済", "related_meeting_id": null, "note": "6/16-17" },
+    { "date": "2026-06-16", "name_ja": "FOMC（経済見通し・ドット公表）", "category": "FOMC", "status": "済", "related_meeting_id": "2026-06-fomc-hold", "note": "6/16-17 据置き・ドット上方修正" },
+    { "date": "2026-06-11", "name_ja": "ECB理事会（3年ぶり利上げ）", "category": "ECB", "status": "済", "related_meeting_id": "2026-06-ecb-hike", "note": "預金金利2.25%へ+25bp" },
+    { "date": "2026-06-15", "name_ja": "日銀 金融政策決定会合（利上げ）", "category": "日銀", "status": "済", "related_meeting_id": "2026-06-boj-hike", "note": "6/15-16 政策金利1.00%へ+25bp" },
     { "date": "2026-07-28", "name_ja": "FOMC（米連邦公開市場委員会）", "category": "FOMC", "status": "予定", "related_meeting_id": null, "note": "7/28-29" },
     { "date": "2026-09-15", "name_ja": "FOMC（経済見通し・ドット公表）", "category": "FOMC", "status": "予定", "related_meeting_id": null, "note": "9/15-16" },
     { "date": "2026-10-27", "name_ja": "FOMC（米連邦公開市場委員会）", "category": "FOMC", "status": "予定", "related_meeting_id": null, "note": "10/27-28" },
