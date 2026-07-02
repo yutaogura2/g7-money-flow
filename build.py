@@ -99,7 +99,7 @@ def build_signals(series: list) -> dict:
     return {"regime": {"score": score, "label": label, "level": level}, "movers": movers}
 
 
-def build_briefing(series: list, signals: dict, as_of: str) -> dict:
+def build_briefing(series: list, signals: dict, as_of: str, events=None) -> dict:
     lines = []
     reg = signals.get("regime", {})
     lines.append(f"リスクレジーム: {reg.get('label', '—')} (総合スコア {reg.get('score')})")
@@ -117,6 +117,15 @@ def build_briefing(series: list, signals: dict, as_of: str) -> dict:
     if pos:
         parts = [f"{s['country']} z{s['zscore']}({'買い過熱' if s['zscore'] > 0 else '売り過熱'})" for s in pos]
         lines.append("ポジション偏り(建玉|Z|≥1.5): " + " / ".join(parts))
+    if events:
+        limit = (date.fromisoformat(as_of) + timedelta(days=14)).isoformat()
+        upcoming = sorted([e for e in events
+                           if as_of <= (e.get("date") or "") <= limit],
+                          key=lambda e: e["date"])[:6]
+        if upcoming:
+            parts = [f"{e['date'][5:7]}/{e['date'][8:10]} {e.get('name_ja','')}({e.get('category','')})"
+                     for e in upcoming]
+            lines.append("今後の政策・会議予定: " + " / ".join(parts))
     stale = [s for s in series if s.get("stale")]
     if stale:
         lines.append("データ鮮度: ⚠ " + " / ".join(f"{s['indicator']}・{s['country']}({s['stale_days']}日)" for s in stale))
@@ -130,7 +139,7 @@ def write_briefing_md(briefing: dict, path: Path = ROOT / "週次ブリーフィ
     Path(path).write_text(md, encoding="utf-8")
 
 
-def build_macro_payload(config_path=None, data_dir=None, points=None) -> dict:
+def build_macro_payload(config_path=None, data_dir=None, points=None, calendar=None) -> dict:
     config_path = config_path or SERIES_CONFIG      # 呼び出し時に解決（monkeypatch対応）
     data_dir = data_dir or MACRO_DIR
     if not Path(config_path).exists():
@@ -170,7 +179,7 @@ def build_macro_payload(config_path=None, data_dir=None, points=None) -> dict:
             "history_yoy": [[r[0], r[2]] for r in rows if r[2] is not None][-pts:],
         })
     signals = build_signals(series)
-    briefing = build_briefing(series, signals, date.today().isoformat())
+    briefing = build_briefing(series, signals, date.today().isoformat(), events=calendar)
     return {"series": series, "signals": signals, "briefing": briefing}
 
 
@@ -287,7 +296,7 @@ def build_xlsx(data: dict, path: Path = XLSX) -> None:
 
 def main() -> int:
     data = load_data()
-    data["macro"] = build_macro_payload()
+    data["macro"] = build_macro_payload(calendar=data.get("calendar"))
     write_briefing_md(data["macro"]["briefing"])
     write_data_js(data)
     build_xlsx(data)

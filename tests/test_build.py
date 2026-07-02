@@ -227,3 +227,25 @@ def test_payload_includes_briefing(tmp_path):
     p = build.build_macro_payload(
         config_path=tmp_path / "series_config.json", data_dir=tmp_path / "macro_data")
     assert "briefing" in p and "lines" in p["briefing"]
+
+
+def test_build_briefing_upcoming_events():
+    signals = {"regime": {"label": "中立", "score": 0.0, "level": "ok"}, "movers": []}
+    events = [
+        {"date": "2026-06-30", "name_ja": "FOMC", "category": "FOMC"},
+        {"date": "2026-07-05", "name_ja": "日銀会合", "category": "日銀"},
+        {"date": "2026-08-01", "name_ja": "遠い予定", "category": "G7財務"},
+        {"date": "2026-06-20", "name_ja": "過去", "category": "G7首脳"},
+    ]
+    b = build.build_briefing([], signals, "2026-06-26", events=events)
+    text = " ".join(b["lines"])
+    assert "今後の政策・会議予定" in text
+    assert "06/30 FOMC(FOMC)" in text and "07/05 日銀会合(日銀)" in text
+    assert "遠い予定" not in text and "過去" not in text
+    # 予定行は鮮度行より前
+    idx_ev = next(i for i, l in enumerate(b["lines"]) if "今後の政策・会議予定" in l)
+    idx_st = next(i for i, l in enumerate(b["lines"]) if "データ鮮度" in l)
+    assert idx_ev < idx_st
+    # events無しなら行なし
+    b2 = build.build_briefing([], signals, "2026-06-26")
+    assert all("今後の政策・会議予定" not in l for l in b2["lines"])
