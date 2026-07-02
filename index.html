@@ -381,6 +381,15 @@ function renderMoneyFlow(){
   const m2lines = m2.map((s,i) => ({label:s.country, points:s.history_yoy||[], color:colors[i%colors.length]}));
   const bslines = bs.map((s,i) => ({label:s.country, points:indexTo100(s.history||[]), color:colors[i%colors.length]}));
 
+  const gl = macro.find(s => s.id === 'GLOBAL_LIQ_USD');
+  const glCard = gl ? `
+    <div class="card">
+      <h3>世界流動性（ドル換算） ── Fed＋ECB＋日銀 総資産</h3>
+      <div><span style="font-size:22px;font-weight:700">${esc(gl.latest)}</span> <span class="meta-row" style="display:inline">兆ドル</span>　<span class="meta-row" style="display:inline">前年比 ${esc(fmtYoy(gl.yoy))}</span></div>
+      ${lineChartSVG([{points:gl.history}], {h:140})}
+      ${chartCaption([{points:gl.history}])}
+      <div class="meta-row">※ドル換算のため為替変動（円安・ユーロ安）の影響を含む</div>
+    </div>` : '';
   const analysisCard = (a.global_liquidity || a.fx_rates || a.implications) ? `
     <div class="card">
       <h3>考察：世界の流動性</h3>
@@ -395,6 +404,7 @@ function renderMoneyFlow(){
     return;
   }
   el.innerHTML = `
+    ${glCard}
     ${analysisCard}
     <div class="card">
       <h3>マネーサプライ(M2) 前年比 ── 主要国比較</h3>
