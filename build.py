@@ -102,22 +102,9 @@ def build_signals(series: list) -> dict:
 def build_policy_cycle(series: list) -> list:
     out = []
     for s in series:
-        if s.get("indicator") != "政策金利":
+        if s.get("indicator") != "政策金利" or s.get("delta6m") is None:
             continue
-        hist = s.get("history") or []
-        if not hist:
-            continue
-        yy, mm, dd = (int(x) for x in s["latest_date"].split("-"))
-        target = (date(yy, mm, dd) - timedelta(days=183)).isoformat()
-        prior = None
-        for d, v in hist:
-            if d <= target:
-                prior = v
-            else:
-                break
-        if prior is None:
-            continue
-        delta = round(s["latest"] - prior, 2)
+        delta = round(s["delta6m"], 2)
         direction = "up" if delta > 0.1 else ("down" if delta < -0.1 else "flat")
         out.append({"country": s["country"], "latest": s["latest"],
                     "delta6m": delta, "dir": direction})
@@ -191,6 +178,9 @@ def build_macro_payload(config_path=None, data_dir=None, points=None, calendar=N
         prev = _value_on_or_before(rows, target)
         delta = round(v - prev, 4) if prev is not None else 0.0
         delta_z = round((v - prev) / std, 2) if (prev is not None and std) else 0.0
+        target6 = (date(yy, mm, dd) - timedelta(days=183)).isoformat()
+        prior6 = _value_on_or_before(rows, target6)
+        delta6m = round(v - prior6, 4) if prior6 is not None else None
         stale_days, stale = _staleness(rows, date.today())
         if s.get("no_stale"):
             stale_days, stale = 0, False
@@ -200,7 +190,7 @@ def build_macro_payload(config_path=None, data_dir=None, points=None, calendar=N
             "group": s.get("group", "fundamental"),
             "latest": v, "latest_date": d, "yoy": y,
             "zscore": zscore, "pctile": stats["pctile"], "stress": stress,
-            "delta": delta, "delta_z": delta_z,
+            "delta": delta, "delta_z": delta_z, "delta6m": delta6m,
             "stale_days": stale_days, "stale": stale,
             "history": [[r[0], r[1]] for r in rows][-pts:],
             "history_yoy": [[r[0], r[2]] for r in rows if r[2] is not None][-pts:],

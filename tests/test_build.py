@@ -244,18 +244,15 @@ def test_no_stale_flag_suppresses_staleness(tmp_path):
 
 
 def test_build_policy_cycle_directions():
-    def mk(country, latest, prior):
-        return {"country": country, "indicator": "政策金利", "latest": latest,
-                "latest_date": "2026-06-01",
-                "history": [["2025-11-01", prior], ["2026-06-01", latest]]}
+    def mk(country, latest, delta6m):
+        return {"country": country, "indicator": "政策金利",
+                "latest": latest, "delta6m": delta6m}
     series = [
-        mk("米国", 3.63, 4.33),
-        mk("日本", 0.75, 0.5),
-        mk("ユーロ圏", 2.25, 2.25),
-        {"country": "英国", "indicator": "政策金利", "latest": 4.0,
-         "latest_date": "2026-06-01", "history": [["2026-06-01", 4.0]]},
-        {"country": "x", "indicator": "CPI", "latest": 300.0,
-         "latest_date": "2026-06-01", "history": [["2020-01-01", 1.0], ["2026-06-01", 300.0]]},
+        mk("米国", 3.63, -0.7),
+        mk("日本", 0.75, 0.25),
+        mk("ユーロ圏", 2.25, 0.0),
+        mk("英国", 4.0, None),                       # 6か月前なし → skip
+        {"country": "x", "indicator": "CPI", "latest": 300.0, "delta6m": 50.0},
     ]
     pc = build.build_policy_cycle(series)
     d = {p["country"]: p for p in pc}
@@ -264,6 +261,13 @@ def test_build_policy_cycle_directions():
     assert d["ユーロ圏"]["dir"] == "flat"
     assert "英国" not in d      # 6か月前なし → skip
     assert "x" not in d         # 政策金利以外は対象外
+
+
+def test_payload_includes_delta6m(tmp_path):
+    _write_macro_fixture(tmp_path)
+    p = build.build_macro_payload(
+        config_path=tmp_path / "series_config.json", data_dir=tmp_path / "macro_data")
+    assert "delta6m" in p["series"][0]
 
 
 def test_payload_signals_policy_cycle(tmp_path):
