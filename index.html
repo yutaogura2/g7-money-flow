@@ -87,6 +87,7 @@ function renderOverview(){
       <h3>週次ブリーフィング <span class="meta-row" style="display:inline">${esc(brief.as_of || '')}</span></h3>
       ${(brief.lines || []).map(l => `<div class="meta-row" style="font-size:13px; margin-bottom:4px">${esc(l)}</div>`).join('') || '<div class="meta-row">—</div>'}
     </div>
+    ${policyCycleCard()}
     <div class="kpi">
       <div class="box"><div class="num">${meetings.length}</div><div class="lbl">登録済み会議・声明</div></div>
       <div class="box"><div class="num">${(DATA.calendar||[]).length}</div><div class="lbl">カレンダー登録イベント</div></div>
@@ -251,7 +252,20 @@ function lineChartSVG(seriesList, opts){
     return `<path d="${d}" fill="none" stroke="${s.color||colors[si%colors.length]}" stroke-width="1.5"/>`;
   }).join('');
   const zero = (minV < 0 && maxV > 0) ? `<line x1="${pad}" y1="${sy(0).toFixed(1)}" x2="${W-pad}" y2="${sy(0).toFixed(1)}" stroke="#3a4a66" stroke-width="0.5"/>` : '';
-  const svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none">${zero}${paths}</svg>`;
+  let markerLines = '';
+  if(opts.markers && xs.length > 1){
+    const seen = new Set();
+    opts.markers.forEach(md => {
+      if(!md || md < xs[0] || md > xs[xs.length-1]) return;
+      let nearest = xs[0];
+      for(const x of xs){ if(x <= md) nearest = x; else break; }
+      if(seen.has(nearest)) return;
+      seen.add(nearest);
+      const mx = sx(nearest).toFixed(1);
+      markerLines += `<line x1="${mx}" y1="0" x2="${mx}" y2="${H}" stroke="#8a7a4f" stroke-width="0.6" stroke-dasharray="3,3"/>`;
+    });
+  }
+  const svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none">${markerLines}${zero}${paths}</svg>`;
   if(seriesList.length === 1){
     const pts = seriesList[0].points || [];
     const step = pts.length > 60 ? Math.ceil(pts.length / 60) : 1;
@@ -273,6 +287,21 @@ function signalBadge(s){
     flag = ` ・ <span style="color:${c}">● ${lbl}</span>`;
   }
   return `<div class="meta-row">Zスコア ${esc(s.zscore)} ・ ${esc(s.pctile)}%ile${flag}</div>`;
+}
+
+function policyCycleCard(){
+  const pc = (DATA.macro && DATA.macro.signals && DATA.macro.signals.policy_cycle) || [];
+  if(!pc.length) return '';
+  const arrow = d => d==='up' ? '↑引き締め' : (d==='down' ? '↓緩和' : '→据置');
+  const color = d => d==='up' ? '#ff8c4f' : (d==='down' ? '#4fd08c' : '#9fb2cf');
+  return `<div class="card">
+    <h3>政策サイクル（政策金利・直近6か月の変化）</h3>
+    <div style="display:flex; gap:18px; flex-wrap:wrap">
+      ${pc.map(p => `<div><div class="meta-row" style="margin:0">${esc(p.country)}</div>
+        <span style="font-size:18px;font-weight:700">${esc(p.latest)}%</span>
+        <span style="color:${color(p.dir)}"> ${esc(arrow(p.dir))} (${p.delta6m>0?'+':''}${esc(p.delta6m)})</span></div>`).join('')}
+    </div>
+  </div>`;
 }
 
 function attachSparkHover(){
@@ -381,14 +410,18 @@ function renderMoneyFlow(){
   const m2lines = m2.map((s,i) => ({label:s.country, points:s.history_yoy||[], color:colors[i%colors.length]}));
   const bslines = bs.map((s,i) => ({label:s.country, points:indexTo100(s.history||[]), color:colors[i%colors.length]}));
 
+  const policyCats = new Set(['FOMC','日銀','ECB','G7首脳','G7財務']);
+  const evMarkers = (DATA.calendar||[]).filter(e => policyCats.has(e.category)).map(e => e.date);
+  const iv = macro.find(s => s.id === 'MOF_INTERVENTION');
+  const markers = evMarkers.concat(iv && iv.history ? iv.history.map(p => p[0]) : []);
   const gl = macro.find(s => s.id === 'GLOBAL_LIQ_USD');
   const glCard = gl ? `
     <div class="card">
       <h3>世界流動性（ドル換算） ── Fed＋ECB＋日銀 総資産</h3>
       <div><span style="font-size:22px;font-weight:700">${esc(gl.latest)}</span> <span class="meta-row" style="display:inline">兆ドル</span>　<span class="meta-row" style="display:inline">前年比 ${esc(fmtYoy(gl.yoy))}</span></div>
-      ${lineChartSVG([{points:gl.history}], {h:140})}
+      ${lineChartSVG([{points:gl.history}], {h:140, markers})}
       ${chartCaption([{points:gl.history}])}
-      <div class="meta-row">※ドル換算のため為替変動（円安・ユーロ安）の影響を含む</div>
+      <div class="meta-row">※ドル換算のため為替変動（円安・ユーロ安）の影響を含む　縦線＝政策イベント・為替介入</div>
     </div>` : '';
   const fo = macro.find(s => s.id === 'MOF_FLOW_OUT');
   const fi = macro.find(s => s.id === 'MOF_FLOW_IN');
@@ -397,9 +430,9 @@ function renderMoneyFlow(){
     <div class="card">
       <h3>対外・対内証券フロー（週次ネット・兆円）</h3>
       ${legendHTML(flowLines)}
-      ${lineChartSVG(flowLines, {h:140})}
+      ${lineChartSVG(flowLines, {h:140, markers})}
       ${chartCaption(flowLines)}
-      <div class="meta-row">＋＝取得超（対外＝日本勢の外向き投資、対内＝海外勢の対日投資）。出典: 財務省（週次・指定報告機関ベース）</div>
+      <div class="meta-row">＋＝取得超（対外＝日本勢の外向き投資、対内＝海外勢の対日投資）。出典: 財務省（週次・指定報告機関ベース）　縦線＝政策イベント・為替介入</div>
     </div>` : '';
   const analysisCard = (a.global_liquidity || a.fx_rates || a.implications) ? `
     <div class="card">
@@ -415,6 +448,7 @@ function renderMoneyFlow(){
     return;
   }
   el.innerHTML = `
+    ${policyCycleCard()}
     ${glCard}
     ${flowCard}
     ${analysisCard}
