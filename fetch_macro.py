@@ -241,6 +241,39 @@ def fetch_mof_flows(kind: str, urlopen=urllib.request.urlopen) -> list:
     return _parse_mof_week_csv(_mof_text(MOF_WEEK_CSV, urlopen), kind)
 
 
+_MOF_MONTHS = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6,
+               "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}
+
+
+def _parse_mof_intervention(text: str) -> list:
+    totals: dict = {}
+    year = month = None
+    for r in csv.reader(io.StringIO(text)):
+        if len(r) < 7:
+            continue
+        y = (r[3] or "").strip()
+        mo = (r[4] or "").strip()
+        d = (r[5] or "").strip()
+        amt = (r[6] or "").replace(",", "").strip()
+        if y.isdigit():
+            year = int(y)
+        if mo in _MOF_MONTHS:
+            month = _MOF_MONTHS[mo]
+        if not d.isdigit() or year is None or month is None:
+            continue                     # 合計行（日が空）や見出しをスキップ
+        try:
+            v = float(amt)
+        except ValueError:
+            continue
+        key = f"{year}-{month:02d}-01"
+        totals[key] = totals.get(key, 0.0) + v
+    return sorted((k, round(v / 10000.0, 4)) for k, v in totals.items())
+
+
+def fetch_mof_intervention(urlopen=urllib.request.urlopen) -> list:
+    return _parse_mof_intervention(_mof_text(MOF_FEIO_CSV, urlopen))
+
+
 def _nearest_prior(pairs: list, target: str):
     val = None
     for d, v in pairs:

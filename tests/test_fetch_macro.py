@@ -385,6 +385,22 @@ def test_fetch_mof_flows_uses_cache():
     fetch_macro._MOF_CACHE.clear()
 
 
+def test_parse_mof_intervention_carryover_and_monthly_sum():
+    rows = [
+        "財務省,,,,,,,,",
+        "平成3年,5月,13日,1991,May,13,139,米ドル買・円売,x",
+        ",6月,10日,,Jun,10,211,米ドル買・円売,x",
+        ",,13日,,,13,213,米ドル買・円売,x",
+        "平成3年4〜6月合計,,,April - June 1991,,,563,,",
+        "平成4年,8月,19日,1992,Aug,19,100,米ドル買・円売,x",
+    ]
+    out = fetch_macro._parse_mof_intervention("\n".join(rows) + "\n")
+    assert ("1991-05-01", 0.0139) in out
+    assert ("1991-06-01", 0.0424) in out      # 211+213=424億円
+    assert ("1992-08-01", 0.01) in out
+    assert out == sorted(out)
+
+
 def test_run_handles_cftc_source(tmp_path):
     cfg = {"series": [{"id": "COT_GOLD", "source": "cftc",
                        "cftc_market": "GOLD - X", "transform": "level"}]}
