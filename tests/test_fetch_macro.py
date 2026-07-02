@@ -401,6 +401,18 @@ def test_parse_mof_intervention_carryover_and_monthly_sum():
     assert out == sorted(out)
 
 
+def test_run_handles_mof_source(tmp_path):
+    cfg = {"series": [{"id": "MOF_FLOW_IN", "source": "mof",
+                       "mof_kind": "flow_in", "transform": "level"}]}
+    def fake_mof(series):
+        assert series["mof_kind"] == "flow_in"
+        return [("2026-06-20", -1.2), ("2026-06-27", -4.7363)]
+    res = fetch_macro.run(cfg, "key", mof_fetcher=fake_mof, data_dir=tmp_path)
+    assert res["ok"] == ["MOF_FLOW_IN"]
+    txt = (tmp_path / "MOF_FLOW_IN.csv").read_text(encoding="utf-8")
+    assert "-4.7363" in txt
+
+
 def test_run_handles_cftc_source(tmp_path):
     cfg = {"series": [{"id": "COT_GOLD", "source": "cftc",
                        "cftc_market": "GOLD - X", "transform": "level"}]}
