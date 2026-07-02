@@ -285,6 +285,62 @@ def test_fetch_real_m2_uses_m2_and_cpi():
     assert rows == [("2026-04-01", 6875.0)]
 
 
+def test_fetch_global_liq_converts_and_aligns():
+    def fred(sid, key):
+        data = {
+            "WALCL": [{"date": "2026-06-17", "value": "6700000"},
+                       {"date": "2026-06-24", "value": "6735645"}],
+            "ECBASSETSW": [{"date": "2026-06-19", "value": "6119940"}],
+            "JPNASSETS": [{"date": "2026-05-01", "value": "6643630"}],
+            "DEXUSEU": [{"date": "2026-06-18", "value": "1.147"}],
+            "DEXJPUS": [{"date": "2026-06-18", "value": "161.37"}],
+        }[sid]
+        return {"observations": data}
+    rows = fetch_macro.fetch_global_liq("key", fred_fetcher=fred)
+    # 2026-06-17 は ECB/EURUSD/USDJPY の直近以前値が無く除外。06-24 のみ。
+    assert len(rows) == 1
+    d, v = rows[0]
+    assert d == "2026-06-24"
+    assert abs(v - 17.8722) < 0.001   # 検算値
+
+
+def test_computed_dispatch_global_liq():
+    import fetch_macro as fm
+    called = {}
+    def fake(k, fred_fetcher=None):
+        called["ok"] = True
+        return [("2026-06-24", 17.87)]
+    orig = fm.fetch_global_liq
+    fm.fetch_global_liq = fake
+    try:
+        out = fm.computed_dispatch({"compute": "global_liq"}, "key")
+        assert called.get("ok") and out == [("2026-06-24", 17.87)]
+    finally:
+        fm.fetch_global_liq = orig
+
+
+def test_fetch_spread_aligns_and_subtracts():
+    def fred(sid, key):
+        data = {
+            "DGS10": [{"date": "2026-06-17", "value": "4.5"},
+                      {"date": "2026-06-18", "value": "4.46"}],
+            "IRLTLT01JPM156N": [{"date": "2026-05-01", "value": "2.65"}],
+        }[sid]
+        return {"observations": data}
+    rows = fetch_macro.fetch_spread("DGS10", "IRLTLT01JPM156N", "key", fred_fetcher=fred)
+    assert rows == [("2026-06-17", 1.85), ("2026-06-18", 1.81)]
+
+
+def test_computed_dispatch_spread():
+    def fred(sid, key):
+        data = {"A": [{"date": "2026-06-18", "value": "4.0"}],
+                "B": [{"date": "2026-06-18", "value": "2.5"}]}[sid]
+        return {"observations": data}
+    out = fetch_macro.computed_dispatch(
+        {"compute": "spread", "minuend": "A", "subtrahend": "B"}, "key", fred_fetcher=fred)
+    assert out == [("2026-06-18", 1.5)]
+
+
 def test_run_handles_cftc_source(tmp_path):
     cfg = {"series": [{"id": "COT_GOLD", "source": "cftc",
                        "cftc_market": "GOLD - X", "transform": "level"}]}

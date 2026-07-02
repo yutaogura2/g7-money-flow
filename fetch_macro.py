@@ -250,6 +250,38 @@ def fetch_real_netliq(api_key, fred_fetcher=fetch_series) -> list:
     return _deflate(netliq, cpi)
 
 
+def fetch_global_liq(api_key, fred_fetcher=fetch_series) -> list:
+    """Fed+ECB+日銀の総資産をドル換算合算（兆ドル）。WALCL日付に整列。"""
+    walcl = parse_observations(fred_fetcher("WALCL", api_key))              # 百万ドル
+    ecb = sorted(parse_observations(fred_fetcher("ECBASSETSW", api_key)))   # 百万ユーロ
+    boj = sorted(parse_observations(fred_fetcher("JPNASSETS", api_key)))    # 億円
+    eurusd = sorted(parse_observations(fred_fetcher("DEXUSEU", api_key)))
+    usdjpy = sorted(parse_observations(fred_fetcher("DEXJPUS", api_key)))
+    out = []
+    for d, w in sorted(walcl):
+        e = _nearest_prior(ecb, d)
+        j = _nearest_prior(boj, d)
+        fx_e = _nearest_prior(eurusd, d)
+        fx_j = _nearest_prior(usdjpy, d)
+        if None in (e, j, fx_e, fx_j) or not fx_j:
+            continue
+        total_mln = w + e * fx_e + j * 100.0 / fx_j
+        out.append((d, round(total_mln / 1e6, 4)))
+    return out
+
+
+def fetch_spread(minuend_id: str, subtrahend_id: str, api_key, fred_fetcher=fetch_series) -> list:
+    a = parse_observations(fred_fetcher(minuend_id, api_key))
+    b = sorted(parse_observations(fred_fetcher(subtrahend_id, api_key)))
+    out = []
+    for d, v in sorted(a):
+        s = _nearest_prior(b, d)
+        if s is None:
+            continue
+        out.append((d, round(v - s, 4)))
+    return out
+
+
 def computed_dispatch(series: dict, api_key: str, fred_fetcher=fetch_series) -> list:
     c = series.get("compute")
     if c == "netliq_us":
@@ -258,6 +290,10 @@ def computed_dispatch(series: dict, api_key: str, fred_fetcher=fetch_series) -> 
         return fetch_real_m2(api_key, fred_fetcher)
     if c == "real_netliq":
         return fetch_real_netliq(api_key, fred_fetcher)
+    if c == "global_liq":
+        return fetch_global_liq(api_key, fred_fetcher)
+    if c == "spread":
+        return fetch_spread(series["minuend"], series["subtrahend"], api_key, fred_fetcher)
     raise ValueError(f"unknown compute: {c}")
 
 
